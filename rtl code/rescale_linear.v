@@ -1,0 +1,34 @@
+module rescale_linear (
+    input wire                  clk,
+    input wire                  rst_n,
+    input  wire signed [31:0]   data_in,   //32位累加结果
+    output reg  signed [7:0]    data_out   //8位量化输出
+);
+    reg signed [47:0] shifted;
+    reg signed [7:0] result;
+    reg signed  [47:0]  temp1;
+    wire signed [47:0]  temp3;
+    wire signed [47:0] scaled1;
+    //乘法转换为移位加
+    assign scaled1 = (data_in<<3)+(data_in<<1)+data_in;
+    
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n)
+            temp1 <= 47'b0;
+        else
+            temp1 <= scaled1;
+    end
+
+    assign temp3 = temp1;
+    //右移15位并进行饱和处理
+    always @(*) begin
+        shifted = temp3 >>> 6'd15; 
+        if (shifted > 127)
+            result = 127;
+        else if (shifted < -128)
+            result = -128;
+        else
+            result = shifted[7:0];//直接截取低8位
+        data_out = result;
+    end
+endmodule
