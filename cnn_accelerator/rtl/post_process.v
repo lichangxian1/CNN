@@ -4,24 +4,24 @@
 // 模块名称: post_process (后处理：偏置加法 + 重量化 + ReLU)
 // 功能描述: 
 //   1. 接收 MAC 阵列输出的 32 个 INT32 累加和。
-//   2. 加上对应通道的 INT16 偏置 (Bias)。
-//   3. 进行重量化 Re-quantization: O = (I * M0) >> n
-//   4. ReLU 激活: 负数截断为 0。
-//   5. 饱和防溢出处理，最终输出 32 个 INT8 数据拼接而成的 256-bit 向量。
+//   2. 【Stage 1】加上对应通道的 INT16 偏置 (Bias)，并乘以量化乘数 M0。
+//   3. 【Stage 2】进行算术右移 n 位 (重量化)。
+//   4. 【Stage 2】ReLU 激活: 负数截断为 0。
+//   5. 【Stage 2】饱和防溢出处理，最终输出 32 个 INT8 数据拼接而成的 256-bit 向量。
 // ==========================================================================
 
 module post_process (
     input  wire                 clk,
     input  wire                 rst_n,
-    input  wire                 mac_valid,       // 标志当前输入的 INT32 数据有效
+    input  wire        AV         mac_valid,       // 标志当前输入的 INT32 数据有效
     
     // 输入接口 (来自 MAC 阵列与 SRAM)
     input  wire [1023:0]        psum_in_flat,    // 32 个 32-bit INT32 局部累加和
     input  wire [511:0]         bias_in_flat,    // 32 个 16-bit INT16 偏置
     
-    // 量化参数 (假设由全局寄存器或统一配置给出，这里简化为统一输入)
+    // 量化参数
     input  wire signed [15:0]   quant_M0,        // 量化乘数 M0
-    input  wire [3:0]           quant_n,         // 量化右移位数 n (假设最大移位 15)
+    input  wire [3:0]           quant_n,         // 量化右移位数 n
     
     // 输出接口 (写回特征图 SRAM)
     output reg                  out_valid,       // 标志输出的 INT8 数据有效，通知 SRAM 写入
@@ -43,48 +43,68 @@ module post_process (
     endgenerate
 
     // ----------------------------------------------------------------------
-    // 1. 流水线计算：加偏置 -> 乘 M0 -> 移位截断 -> ReLU
+    // 🌟 流水线寄存器声明
     // ----------------------------------------------------------------------
+    reg                 stage1_valid;
+    reg signed [47:0]   stage1_mult [0:31]; // 暂存第一级 32 个 48-bit 乘法结果
+
+    // 用于组合逻辑计算的内部临时变量
     integer i;
-    reg signed [32:0]  psum_with_bias;   // 扩展 1 位防溢出
-    reg signed [47:0]  quant_mult;       // 32-bit * 16-bit = 48-bit 乘积
-    reg signed [47:0]  quant_shifted;    // 移位后的结果
-    
+    reg signed [32:0]   psum_with_bias;     
+    reg signed [47:0]   temp_shifted;       
+
+    // ----------------------------------------------------------------------
+    // 1. 二级流水线核心逻辑
+    // ----------------------------------------------------------------------
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
-            out_valid <= 1'b0;
+            stage1_valid <= 1'b0;
+            out_valid    <= 1'b0;
             act_out_flat <= 256'd0;
+            for (i = 0; i < 32; i = i + 1) begin
+                stage1_mult[i] <= 48'sd0;
+            end
         end else begin
-            // 信号透传打拍
-            out_valid <= mac_valid;
+            
+            // =========================================================
+            // 【Stage 1】: 加偏置 (Add) + 乘 M0 (Mult)
+            // =========================================================
+            stage1_valid <= mac_valid;
             
             if (mac_valid) begin
                 for (i = 0; i < 32; i = i + 1) begin
-                    // Step 1: 加偏置 (需将 INT16 的偏置符号扩展为 33 位相加)
+                    // 符号扩展并相加
                     psum_with_bias = $signed(psum_in[i]) + $signed({{16{bias_in[i][15]}}, bias_in[i]});
+                    // 乘法运算，将结果推入流水线寄存器
+                    stage1_mult[i] <= psum_with_bias * $signed(quant_M0);
+                end
+            end
+
+            // =========================================================
+            // 【Stage 2】: 算术右移 (Shift) + ReLU + 饱和截断 (Sat)
+            // =========================================================
+            out_valid <= stage1_valid;
+            
+            if (stage1_valid) begin
+                for (i = 0; i < 32; i = i + 1) begin
+                    // 从 Stage 1 寄存器读取数据并右移
+                    temp_shifted = stage1_mult[i] >>> quant_n;
                     
-                    // Step 2: 乘以 M0 (重量化公式 O = I * M0 * 2^-n 的前一半)
-                    // 在硬件里我们先乘，以保留精度
-                    quant_mult = psum_with_bias * $signed(quant_M0);
-                    
-                    // Step 3: 算术右移 n 位 (这里用 >>> 确保符号位正确填补)
-                    quant_shifted = quant_mult >>> quant_n;
-                    
-                    // Step 4 & 5: ReLU 与 饱和截断 (Saturation) 变回 INT8
-                    if (quant_shifted < 0) begin
-                        // ReLU 激活：小于 0 的直接置 0
+                    if (temp_shifted < 0) begin
+                        // ReLU: 负数变 0
                         act_out_flat[i*8 +: 8] <= 8'd0;
                     end 
-                    else if (quant_shifted > 127) begin
-                        // 饱和处理：超过 INT8 正数最大值 127，强行卡在 127
+                    else if (temp_shifted > 127) begin
+                        // Saturation: 超过 127 强行截断为 127
                         act_out_flat[i*8 +: 8] <= 8'd127;
                     end 
                     else begin
-                        // 正常截断取低 8 位
-                        act_out_flat[i*8 +: 8] <= quant_shifted[7:0];
+                        // 正常取低 8 位
+                        act_out_flat[i*8 +: 8] <= temp_shifted[7:0];
                     end
                 end
             end
+            
         end
     end
 

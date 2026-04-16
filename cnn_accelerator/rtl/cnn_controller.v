@@ -29,12 +29,11 @@ module cnn_controller (
     output reg  [1:0]   sram_route_sel,  // 0: 读Input写Pong, 1: 读Pong写Ping, 2: 读Ping写Pong
     output reg  [9:0]   act_raddr,       // 特征图 SRAM 读取地址
     output reg  [9:0]   act_waddr,       // 特征图 SRAM 写入地址
-    output reg  [11:0]  weight_raddr     // 权重 SRAM 读取地址
+    output reg  [3:0]   ch_grp_cnt       // 【新增输出】将内部的分组计数器引出给 ROM
 );
 
     // ==========================================================================
     // 第一部分：状态机定义 (FSM States)
-    // 使用独热码 (One-Hot) 或是二进制编码，这里为了易读使用二进制参数定义
     // ==========================================================================
     localparam ST_IDLE  = 3'd0; // 待机状态：等待 start 信号
     localparam ST_CONV1 = 3'd1; // 算第一层 (常规卷积)
@@ -45,18 +44,12 @@ module cnn_controller (
     reg [2:0] current_state, next_state;
 
     // ==========================================================================
-    // 第二部分：核心嵌套计数器 (用于追踪当前算到了整张图的哪个位置)
+    // 第二部分：核心嵌套计数器与状态标志
     // ==========================================================================
-    // spatial_cnt: 空间像素计数器。记录当前层已经算完了几个输出像素点。
-    //   - 第一层输出 20x4=80 个点，所以数到 79
-    //   - 第二/三层输出 18x2=36 个点，所以数到 35
     reg [6:0] spatial_cnt;  
     
-    // ch_grp_cnt: 通道分组计数器。我们的阵列算力是折叠的，需要分批算通道。
-    //   - 第一层：要算 32 个输出通道，但一周期只能算 4 个。所以分 8 批 (数 0~7)。
-    //   - 第二层：一次能算完 32 个通道。不需要分批 (恒为 0)。
-    //   - 第三层：要算 32 个通道，一次算 8 个。所以分 4 批 (数 0~3)。
-    reg [3:0] ch_grp_cnt;   
+    // 🌟 新增：预读标志位。1: 正在等待 SRAM 首地址数据的 1 拍延迟
+    reg       is_prefetching; 
 
     // ==========================================================================
     // 三段式状态机 段1：状态跳转时序逻辑 (打拍寄存)
@@ -73,34 +66,30 @@ module cnn_controller (
     // 三段式状态机 段2：次态组合逻辑 (决定什么时候跳到下一层)
     // ==========================================================================
     always @(*) begin
-        next_state = current_state; // 默认保持当前状态
+        next_state = current_state; 
         
         case (current_state)
             ST_IDLE: begin
-                if (start) next_state = ST_CONV1; // 接到起跑信号，进入第一层
+                if (start) next_state = ST_CONV1; 
             end
             
             ST_CONV1: begin
-                // 当算完最后一个空间像素 (79) 的最后一批通道 (7) 时，跳入第二层
                 if (spatial_cnt == 7'd79 && ch_grp_cnt == 4'd7 && window_valid)
                     next_state = ST_DW;
             end
             
             ST_DW: begin
-                // DW 层不用分批算通道，算完最后一个空间像素 (35) 就跳入第三层
                 if (spatial_cnt == 7'd35 && window_valid)
                     next_state = ST_PW;
             end
             
             ST_PW: begin
-                // 算完最后一个像素 (35) 的最后一批通道 (3) 时，网络核心计算结束
-                // (此处省略全连接层，直接进 DONE)
-                if (spatial_cnt == 7'd35 && ch_grp_cnt == 4'd3 && window_valid) // 这里修正一个小Bug：只有在数据有效且计算完成时才跳转
+                if (spatial_cnt == 7'd35 && ch_grp_cnt == 4'd3 && window_valid) 
                     next_state = ST_DONE;
             end
             
             ST_DONE: begin
-                next_state = ST_IDLE; // 发出完成信号后回到待机
+                next_state = ST_IDLE; 
             end
             
             default: next_state = ST_IDLE;
@@ -109,11 +98,9 @@ module cnn_controller (
 
     // ==========================================================================
     // 三段式状态机 段3：数据通路控制与地址生成 (最核心的时序逻辑)
-    // 这一段决定了阵列“在此时此刻应该做什么动作”
     // ==========================================================================
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
-            // --- 系统复位，所有信号清零 ---
             spatial_cnt    <= 7'd0;
             ch_grp_cnt     <= 4'd0;
             layer_mode     <= 2'b00;
@@ -123,7 +110,7 @@ module cnn_controller (
             sram_route_sel <= 2'd0;
             act_raddr      <= 10'd0;
             act_waddr      <= 10'd0;
-            weight_raddr   <= 12'd0;
+            is_prefetching <= 1'b0; // 🌟 新增：复位预读标志
         end else begin
             case (current_state)
                 
@@ -133,121 +120,130 @@ module cnn_controller (
                 ST_IDLE: begin
                     done <= 1'b0;
                     if (start) begin
-                        // 准备进入 Conv1，初始化所有指针
                         spatial_cnt    <= 7'd0;
                         ch_grp_cnt     <= 4'd0;
-                        act_raddr      <= 10'd0; // 从输入图像第0个像素开始读
-                        act_waddr      <= 10'd0; // 写到 Pong SRAM 第0个位置
-                        weight_raddr   <= 12'd0; // 从权重头部开始读
-                        line_buf_en    <= 1'b1;  // 打开行缓存，开始吸入数据填充窗口
-                        sram_route_sel <= 2'd0;  // 路由: Read Input, Write Pong
+                        act_raddr      <= 10'd0; 
+                        act_waddr      <= 10'd0; 
+                        sram_route_sel <= 2'd0; 
+                        
+                        // 🌟 修改：第一拍坚决不打开行缓存，而是立起预读 Flag
+                        line_buf_en    <= 1'b0;  
+                        is_prefetching <= 1'b1;  
                     end
                 end
                 
                 // -------------------------------------------------------------
-                // 【第一层：常规卷积】(需要复用窗口，冻结流水线)
+                // 【第一层：常规卷积】
                 // -------------------------------------------------------------
                 ST_CONV1: begin
-                    layer_mode <= 2'b00; // 告知 MAC 阵列组合成 4棵 77进1 的大树
+                    layer_mode <= 2'b00; 
                     
-                    if (!window_valid) begin
-                        // 【情况A：窗口没填满】
-                        // 数据还在行缓存里爬行，不能算。继续让它走，并继续读 SRAM
+                    // 🌟 新增：拦截预读拍
+                    if (is_prefetching) begin
+                        act_raddr      <= act_raddr + 1'b1; // 发出下一个地址
+                        line_buf_en    <= 1'b1;             // 打开门，准备接收首地址数据
+                        is_prefetching <= 1'b0;             // 预读完成
+                    end 
+                    else if (!window_valid) begin
                         line_buf_en <= 1'b1; 
-                        mac_valid   <= 1'b0; // 告诉后处理：现在输出的是垃圾，别存！
-                        act_raddr   <= act_raddr + 1'b1; // 连续读下一个像素喂给缓存
+                        mac_valid   <= 1'b0; 
+                        act_raddr   <= act_raddr + 1'b1; 
                     end 
                     else begin
-                        // 【情况B：窗口填满了，可以开算了！】
-                        // 核心操作：我们要针对同一个图像窗口，换 8 批不同的卷积核来算
-                        line_buf_en <= 1'b0; // 【关键】冻结行缓存！图像窗口定住不动！
-                        mac_valid   <= 1'b1; // MAC 输出有效，允许写入 SRAM
-                        
-                        weight_raddr <= weight_raddr + 1'b1; // 权重地址不断加，取新核
-                        act_waddr    <= act_waddr + 1'b1;    // 每算完一批就存入 SRAM
+                        line_buf_en <= 1'b0; 
+                        mac_valid   <= 1'b1; 
+                        act_waddr   <= act_waddr + 1'b1;    
                         
                         if (ch_grp_cnt == 4'd7) begin
-                            // 8 批通道都算完了！这个空间像素彻底搞定。
                             ch_grp_cnt  <= 4'd0;
                             spatial_cnt <= spatial_cnt + 1'b1;
                             
-                            // 重新打开行缓存的门，让图像滑动到下一个像素
                             line_buf_en <= 1'b1; 
-                            act_raddr   <= act_raddr + 1'b1; // 读入新像素
+                            act_raddr   <= act_raddr + 1'b1; 
                             
-                            // 状态切换预判：如果算完最后一个，为下一层做初始化
                             if (spatial_cnt == 7'd79) begin
                                 spatial_cnt    <= 7'd0;
                                 ch_grp_cnt     <= 4'd0;
-                                act_raddr      <= 10'd0; // 下一层从头读 Pong
-                                act_waddr      <= 10'd0; // 下一层从头写 Ping
-                                sram_route_sel <= 2'd1;  // 路由: Read Pong, Write Ping
-                                mac_valid      <= 1'b0;  // 切换瞬间置零
+                                act_raddr      <= 10'd0; 
+                                act_waddr      <= 10'd0; 
+                                sram_route_sel <= 2'd1;  
+                                mac_valid      <= 1'b0;  
+                                
+                                // 🌟 新增：层切换瞬间强行关门，为下一层做预读准备
+                                line_buf_en    <= 1'b0;  
+                                is_prefetching <= 1'b1;  
                             end
                         end else begin
-                            // 还没算完 8 批，空间像素不动，通道批次 +1
                             ch_grp_cnt <= ch_grp_cnt + 1'b1;
                         end
                     end
                 end
                 
                 // -------------------------------------------------------------
-                // 【第二层：深度可分离卷积】(不需要复用窗口，流水线全开)
+                // 【第二层：深度可分离卷积】
                 // -------------------------------------------------------------
                 ST_DW: begin
-                    layer_mode <= 2'b01; // 告知 MAC 阵列组合成 32棵 9进1 的小树
+                    layer_mode <= 2'b01; 
                     
-                    if (!window_valid) begin
+                    // 🌟 新增：拦截预读拍
+                    if (is_prefetching) begin
+                        act_raddr      <= act_raddr + 1'b1;
+                        line_buf_en    <= 1'b1;
+                        is_prefetching <= 1'b0;
+                    end 
+                    else if (!window_valid) begin
                         line_buf_en <= 1'b1;
                         mac_valid   <= 1'b0;
                         act_raddr   <= act_raddr + 1'b1;
                     end 
                     else begin
-                        // 因为阵列很大，1 个周期就能把 32 个通道全算完
-                        // 所以不需要冻结窗口，一边滑一边出结果！
-                        line_buf_en  <= 1'b1;  // 一直滑动
+                        line_buf_en  <= 1'b1;  
                         mac_valid    <= 1'b1;
                         
-                        weight_raddr <= weight_raddr + 1'b1;
                         act_waddr    <= act_waddr + 1'b1;
                         act_raddr    <= act_raddr + 1'b1;
                         spatial_cnt  <= spatial_cnt + 1'b1;
                         
-                        // 状态切换预判
                         if (spatial_cnt == 7'd35) begin
                             spatial_cnt    <= 7'd0;
-                            act_raddr      <= 10'd0; // 从头读 Ping
-                            act_waddr      <= 10'd0; // 从头写 Pong
-                            sram_route_sel <= 2'd2;  // 路由: Read Ping, Write Pong
+                            act_raddr      <= 10'd0; 
+                            act_waddr      <= 10'd0; 
+                            sram_route_sel <= 2'd2;  
                             mac_valid      <= 1'b0;
+                            
+                            // 🌟 新增：为下一层做预读准备
+                            line_buf_en    <= 1'b0;  
+                            is_prefetching <= 1'b1;  
                         end
                     end
                 end
                 
                 // -------------------------------------------------------------
-                // 【第三层：逐点卷积】(1x1 卷积，重回冻结逻辑)
+                // 【第三层：逐点卷积】
                 // -------------------------------------------------------------
                 ST_PW: begin
-                    layer_mode <= 2'b10; // 告知 MAC 阵列组合成 8棵 32进1 的中树
+                    layer_mode <= 2'b10; 
                     
-                    // 1x1 卷积其实不需要 3x3 行缓存的延迟，只要读到1个点就能算。
-                    // 但为了统一数据通路，我们依然使用 window_valid (此时可瞬间拉高)
-                    if (window_valid) begin
-                        line_buf_en <= 1'b0; // 冻结当前像素
+                    // 🌟 新增：拦截预读拍
+                    if (is_prefetching) begin
+                        act_raddr      <= act_raddr + 1'b1;
+                        line_buf_en    <= 1'b1;
+                        is_prefetching <= 1'b0;
+                    end 
+                    else if (window_valid) begin
+                        line_buf_en <= 1'b0; 
                         mac_valid   <= 1'b1;
-                        
-                        weight_raddr <= weight_raddr + 1'b1;
-                        act_waddr    <= act_waddr + 1'b1;
+                        act_waddr   <= act_waddr + 1'b1;
                         
                         if (ch_grp_cnt == 4'd3) begin
-                            // 4 批通道算完 (4*8=32)，滑动到下一个点
                             ch_grp_cnt  <= 4'd0;
                             spatial_cnt <= spatial_cnt + 1'b1;
                             line_buf_en <= 1'b1;
                             act_raddr   <= act_raddr + 1'b1;
                             
                             if (spatial_cnt == 7'd35) begin
-                                mac_valid <= 1'b0; // 结束前停止写入
+                                mac_valid <= 1'b0; 
+                                // (由于直接进入 DONE 状态，这里不需要置位 is_prefetching)
                             end
                         end else begin
                             ch_grp_cnt <= ch_grp_cnt + 1'b1;
@@ -263,7 +259,7 @@ module cnn_controller (
                 // 【完成状态】
                 // -------------------------------------------------------------
                 ST_DONE: begin
-                    done        <= 1'b1; // 发出高电平，告诉外部“我算完了！”
+                    done        <= 1'b1; 
                     line_buf_en <= 1'b0;
                     mac_valid   <= 1'b0;
                 end

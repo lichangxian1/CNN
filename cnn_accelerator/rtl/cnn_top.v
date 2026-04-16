@@ -1,173 +1,154 @@
 `timescale 1ns / 1ps
 
-// ==========================================================================
-// 模块名称: cnn_top (CNN 加速器顶层模块)
-// 功能描述: 
-//   1. 例化并连接所有子模块：大脑、运算阵列、行缓存、后处理、SRAM。
-//   2. 实现 Ping-Pong SRAM 的数据流向动态路由。
-// ==========================================================================
-
 module cnn_top (
     input  wire                 clk,
     input  wire                 rst_n,
     input  wire                 start,
     
-    // --- 外部输入接口 (例如接收 MFCC 特征图数据) ---
-    input  wire [255:0]         ext_act_in,     // 外部输入数据
-    input  wire                 ext_act_valid,  // 外部输入有效信号
-    
-    // --- 外部输出接口 ---
-    output wire                 done            // 推理完成信号
+    // --- 外部输入接口 ---
+    input  wire [255:0]         ext_act_in,     
+    input  wire                 ext_act_valid,  
+    output wire                 done            
 );
 
-    // ==========================================
-    // 1. 内部互连线网声明 (Interconnect Nets)
-    // ==========================================
-    // FSM 控制信号
+    // FSM 控制信号 (原生态 0拍延迟)
     wire [1:0]  layer_mode;
     wire        line_buf_en;
     wire        mac_valid;
     wire [1:0]  sram_route_sel;
     wire [9:0]  act_raddr, act_waddr;
-    wire [11:0] weight_raddr;
+    wire [3:0]  ch_grp_cnt;
     
-    // SRAM 接口信号
+    // ==========================================
+    // 🌟 流水线时序对齐 (Pipeline Synchronization)
+    // 解决数据流延迟与控制信号不匹配的核心！
+    // ==========================================
+    // 1. MAC 阵列自带 2 拍延迟，mac_valid 必须打 2 拍再给后处理
+    reg [1:0] mac_valid_pipe;
+    
+    // 2. 算上后处理的 1 拍，总延迟 3 拍。写地址和模式必须打 3 拍！
+    reg [9:0] act_waddr_pipe [0:3];
+    reg [1:0] layer_mode_pipe [0:3];
+    
+    // 3. SRAM 路由信号需要管到最后一次写，所以打 3 拍给写 MUX 用
+    reg [1:0] route_sel_pipe [0:2];
+
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            mac_valid_pipe <= 2'd0;
+            act_waddr_pipe[0] <= 10'd0; act_waddr_pipe[1] <= 10'd0; act_waddr_pipe[2] <= 10'd0; act_waddr_pipe[3] <= 10'd0;
+            layer_mode_pipe[0] <= 2'd0; layer_mode_pipe[1] <= 2'd0; layer_mode_pipe[2] <= 2'd0; layer_mode_pipe[3] <= 2'd0;
+            route_sel_pipe[0] <= 2'd0; route_sel_pipe[1] <= 2'd0; route_sel_pipe[2] <= 2'd0; route_sel_pipe[3] <= 2'd0; route_sel_pipe[4] <= 2'd0;
+        end else begin
+            mac_valid_pipe    <= {mac_valid_pipe[0], mac_valid};
+            
+            act_waddr_pipe[0] <= act_waddr;  
+            act_waddr_pipe[1] <= act_waddr_pipe[0];  
+            act_waddr_pipe[2] <= act_waddr_pipe[1];
+            act_waddr_pipe[3] <= act_waddr_pipe[2]; // 🌟 补上漏掉的第 4 拍
+            
+            layer_mode_pipe[0]<= layer_mode; 
+            layer_mode_pipe[1]<= layer_mode_pipe[0]; 
+            layer_mode_pipe[2]<= layer_mode_pipe[1];
+            layer_mode_pipe[3]<= layer_mode_pipe[2]; // 🌟 补上漏掉的第 4 拍
+            
+            route_sel_pipe[0] <= sram_route_sel; 
+            route_sel_pipe[1] <= route_sel_pipe[0];  
+            route_sel_pipe[2] <= route_sel_pipe[1];
+            route_sel_pipe[3] <= route_sel_pipe[2];
+            route_sel_pipe[4] <= route_sel_pipe[3];  // 🌟 路由选择撑到第 5 拍
+        end
+    end
+
+    // 提取同步后的安全信号
+    wire       mac_valid_sync   = mac_valid_pipe[1];
+    wire [9:0] act_waddr_sync   = act_waddr_pipe[2];
+    wire [1:0] layer_mode_sync  = layer_mode_pipe[2];
+    wire [1:0] route_sel_write  = route_sel_pipe[2]; 
+
+    // ==========================================
+    // 数据通路与模块连线
+    // ==========================================
     wire [255:0] ping_dout, pong_dout;
     reg  [255:0] ping_din, pong_din;
     reg  [9:0]   ping_addr, pong_addr;
     reg          ping_wen, pong_wen;
-    wire         ping_cen = 1'b0; // 芯片使能常开
-    wire         pong_cen = 1'b0;
     
-    // 数据通路信号
-    wire [255:0] current_layer_act_in;   // 当前层送到行缓存的输入数据
-    wire [2463:0] act_in_flat;           // 行缓存展平后给 MAC 的输入 (2560 bits 省略到 2464)
-    wire [2463:0] wgt_in_flat;           // 权重 SRAM 给 MAC 的输入
-    wire [1023:0] psum_out_flat;         // MAC 给后处理的 INT32 数据
-    wire [511:0]  bias_in_flat;          // 偏置 SRAM 给后处理的 INT16 数据
+    wire [2463:0] act_in_flat, wgt_in_flat;
+    wire [1023:0] psum_out_flat;         
+    wire [511:0]  bias_in_flat;          
+    wire [255:0]  act_out_flat;          
+    wire          out_valid;             
+    wire          window_valid;
     
-    wire [255:0]  act_out_flat;          // 后处理算完的 INT8 数据 (准备写回 SRAM)
-    wire          out_valid;             // 后处理算完的有效信号
+    wire          staging_wen;
+    wire [9:0]    staging_waddr;
+    wire [255:0]  staging_wdata;
 
-    // 行缓存状态
-    wire window_valid = 1'b1; // 仿真中需连接行缓存的真实状态，此处为逻辑占位
+    // 🌟 SRAM 物理地址紧凑转换 (读专用)
+    wire [9:0] ping_raddr = (sram_route_sel == 2'd0) ? act_raddr[9:5] : act_raddr;
+    
+    // 🌟 第一层读出数据的字节切片MUX (从 256bit 抠出 8bit)
+    reg [9:0] act_raddr_delay;
+    always @(posedge clk) act_raddr_delay <= act_raddr;
+    wire [255:0] conv1_act_in = { 248'd0, ping_dout[ act_raddr_delay[4:0] * 8 +: 8 ] };
+
+    wire [255:0] current_layer_act_in = (layer_mode == 2'd0) ? conv1_act_in : 
+                                        (sram_route_sel == 2'd1) ? pong_dout : ping_dout;
 
     // ==========================================
-    // 2. Ping-Pong SRAM 动态路由逻辑 (核心灵魂)
+    // 🌟 读写分离的终极 Ping-Pong 路由
     // ==========================================
-    // 这里的组合逻辑像“铁路道岔”一样，根据当前计算哪一层，引导数据流向
-    
     always @(*) begin
-        // 默认状态：防止锁存器
-        ping_wen  = 1'b1; // 1为读
-        pong_wen  = 1'b1;
-        ping_addr = 10'd0;
-        pong_addr = 10'd0;
-        ping_din  = 256'd0;
-        pong_din  = 256'd0;
-        
-        case (sram_route_sel)
-            2'd0: begin
-                // 第一层 (Conv1)：从外部读入特征图，结果写到 Pong
-                // 此时 Ping SRAM 空闲或用于其他
-                pong_wen  = ~out_valid;      // 当输出有效时拉低，写入 Pong
-                pong_addr = act_waddr;
-                pong_din  = act_out_flat;
-            end
-            
-            2'd1: begin
-                // 第二层 (Depthwise)：从 Pong 读入上一层结果，算出结果写到 Ping
-                pong_wen  = 1'b1;            // Pong 只读不写
-                pong_addr = act_raddr;       // 给 Pong 读地址
-                
-                ping_wen  = ~out_valid;      // 写入 Ping
-                ping_addr = act_waddr;
-                ping_din  = act_out_flat;
-            end
-            
-            2'd2: begin
-                // 第三层 (Pointwise)：从 Ping 读入结果，算出结果写到 Pong
-                ping_wen  = 1'b1;            // Ping 只读不写
-                ping_addr = act_raddr;
-                
-                pong_wen  = ~out_valid;      // 写入 Pong
-                pong_addr = act_waddr;
-                pong_din  = act_out_flat;
-            end
-            
-            default: ;
-        endcase
+        ping_wen = 1'b1; ping_addr = 10'd0; ping_din = 256'd0;
+        // Ping 写判定 (使用延迟后的 route_sel_write)
+        if (route_sel_write == 2'd1) begin
+            ping_wen = staging_wen; ping_addr = staging_waddr; ping_din = staging_wdata;
+        end 
+        // Ping 读判定 (使用实时的 sram_route_sel)
+        else if (sram_route_sel == 2'd2 || sram_route_sel == 2'd0) begin
+            ping_wen = 1'b1; ping_addr = ping_raddr;
+        end
     end
 
-    // 当前层送往计算阵列的输入数据选择器 (MUX)
-    assign current_layer_act_in = (sram_route_sel == 2'd0) ? ext_act_in : 
-                                  (sram_route_sel == 2'd1) ? pong_dout : ping_dout;
-
+    always @(*) begin
+        pong_wen = 1'b1; pong_addr = 10'd0; pong_din = 256'd0;
+        // Pong 写判定
+        if (route_sel_write == 2'd0 || route_sel_write == 2'd2) begin
+            pong_wen = staging_wen; pong_addr = staging_waddr; pong_din = staging_wdata;
+        end 
+        // Pong 读判定
+        else if (sram_route_sel == 2'd1) begin
+            pong_wen = 1'b1; pong_addr = act_raddr;
+        end
+    end
 
     // ==========================================
-    // 3. 子模块例化 (Sub-module Instantiations)
+    // 模块例化区 (全拼图组装)
     // ==========================================
+    cnn_controller u_controller (.clk(clk), .rst_n(rst_n), .start(start), .window_valid(window_valid),
+        .layer_mode(layer_mode), .line_buf_en(line_buf_en), .mac_valid(mac_valid), .done(done),
+        .sram_route_sel(sram_route_sel), .act_raddr(act_raddr), .act_waddr(act_waddr), .ch_grp_cnt(ch_grp_cnt));
 
-    // 3.1 全局控制器 (大脑)
-    cnn_controller u_controller (
-        .clk            (clk),
-        .rst_n          (rst_n),
-        .start          (start),
-        .window_valid   (window_valid),
-        .layer_mode     (layer_mode),
-        .line_buf_en    (line_buf_en),
-        .mac_valid      (mac_valid),
-        .done           (done),
-        .sram_route_sel (sram_route_sel),
-        .act_raddr      (act_raddr),
-        .act_waddr      (act_waddr),
-        .weight_raddr   (weight_raddr)
-    );
+    sram_256x80 u_sram_ping (.CLK(clk), .CEN(1'b0), .WEN(ping_wen), .A(ping_addr), .D(ping_din), .Q(ping_dout));
+    sram_256x80 u_sram_pong (.CLK(clk), .CEN(1'b0), .WEN(pong_wen), .A(pong_addr), .D(pong_din), .Q(pong_dout));
 
-    // 3.2 特征图 SRAM (由于你提供了 sram_32x32，我们用宏参数覆写位宽为 256)
-    // Ping 缓存
-    sram_32x32 #(
-        .Bits(256), .Word_Depth(80), .Add_Width(10)
-    ) u_sram_ping (
-        .CLK(clk), .CEN(ping_cen), .WEN(ping_wen), .A(ping_addr), .D(ping_din), .Q(ping_dout)
-    );
+    line_buffer u_line_buffer (.clk(clk), .rst_n(rst_n), .layer_mode(layer_mode), .shift_en(line_buf_en),
+        .sram_data_in(current_layer_act_in), .window_valid(window_valid), .act_in_flat(act_in_flat));
 
-    // Pong 缓存
-    sram_32x32 #(
-        .Bits(256), .Word_Depth(80), .Add_Width(10)
-    ) u_sram_pong (
-        .CLK(clk), .CEN(pong_cen), .WEN(pong_wen), .A(pong_addr), .D(pong_din), .Q(pong_dout)
-    );
+    param_rom u_param_rom (.clk(clk), .layer_mode(layer_mode), .ch_grp_cnt(ch_grp_cnt),
+        .wgt_in_flat(wgt_in_flat), .bias_in_flat(bias_in_flat));
 
-    // 3.3 行缓存 Line Buffer (伪代码连线：接收SRAM数据，吐出展平窗口)
-    // (此处应例化我们之前写的 line_buffer.v，为了代码简洁，省去中间展平连线)
-    assign act_in_flat = {10{current_layer_act_in}}[2463:0]; // 这是一个占位符，实际需连接 Line Buffer 的输出 p00~p22
-    
-    // 权重与偏置模块 (此处简化为直接获取，实际工程可能连接外部 ROM 或另设 SRAM)
-    assign wgt_in_flat  = 2464'd0; // 假定连到 Weight SRAM_Q
-    assign bias_in_flat = 512'd0;  // 假定连到 Bias SRAM_Q
+    mac_array u_mac_array (.clk(clk), .rst_n(rst_n), .layer_mode(layer_mode),
+        .act_in_flat(act_in_flat), .wgt_in_flat(wgt_in_flat), .psum_out_flat(psum_out_flat));
 
-    // 3.4 统一计算阵列 MAC Array
-    mac_array u_mac_array (
-        .clk            (clk),
-        .rst_n          (rst_n),
-        .layer_mode     (layer_mode),
-        .act_in_flat    (act_in_flat),
-        .wgt_in_flat    (wgt_in_flat),
-        .psum_out_flat  (psum_out_flat)
-    );
+    post_process u_post_process (.clk(clk), .rst_n(rst_n), .mac_valid(mac_valid_sync), // 🌟 传入延迟对齐的 valid
+        .psum_in_flat(psum_out_flat), .bias_in_flat(bias_in_flat), .quant_M0(16'sd128), .quant_n(4'd8),
+        .out_valid(out_valid), .act_out_flat(act_out_flat));
 
-    // 3.5 后处理模块 Post Process
-    post_process u_post_process (
-        .clk            (clk),
-        .rst_n          (rst_n),
-        .mac_valid      (mac_valid),
-        .psum_in_flat   (psum_out_flat),
-        .bias_in_flat   (bias_in_flat),
-        .quant_M0       (16'sd128),  // 假设量化参数 M0
-        .quant_n        (4'd8),      // 假设量化参数 n
-        .out_valid      (out_valid),
-        .act_out_flat   (act_out_flat)
-    );
+    output_staging_buffer u_staging_buffer (.clk(clk), .rst_n(rst_n), 
+        .layer_mode_sync(layer_mode_sync), .act_waddr_sync(act_waddr_sync), // 🌟 传入延迟对齐的控制信号
+        .out_valid(out_valid), .act_out_flat(act_out_flat),
+        .staging_wen(staging_wen), .staging_waddr(staging_waddr), .staging_wdata(staging_wdata));
 
 endmodule
