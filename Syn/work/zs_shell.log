@@ -1,0 +1,238 @@
+       /****************************************************************/
+       /*                           ZenSyn                             */
+       /*                        ZenSyn Power                          */
+       /*                         ZenSyn DFT                           */
+       /*                                                              */
+       /*            Platform: zs_shell (Compiled by RHEL 7 64bit)     */
+       /*            Compilation Time: 10:30 AM, 29-Dec-25             */
+       /*            Version: main_1229_2e0365ed.rel                   */
+       /*                                                              */
+       /*                         Empyrean                             */
+       /*          Copyright (c), 2025. All Rights Reserved.           */
+       /*                                                              */
+       /* This program  contains  the  proprietary  and   confidential */
+       /* information of Empyrean.  Any disclosure or reproduction of  */
+       /* this program, without the prior consent of  Empyrean  is     */
+       /* strictly prohibited.                                         */
+       /*                                                              */
+       /*             Invocation Time:  6:44 PM, 20-Apr-26             */
+       /*                                                              */
+       /****************************************************************/
+INFO:    Processing command script file '../scripts/zs_cnn.tcl'...
+CMD:     set search_path "$search_path ../rtl ../scripts
+         ../../../../SMIC18/lib ../../../../SMIC18/mem ../work"
+0
+CMD:     set target_lib "slow.lib S018V3EBCDSP_X20Y4D128_PR_tt_1.8_25.lib
+         SP018W_V1p8_max.lib"
+INFO:    Reading file
+         '/cluster/home/jiut107/cnn2/CNN/Syn/../../../SMIC18/lib/slow.lib'.
+INFO:    Library 'slow' is compiled
+INFO:    Reading file
+         '/cluster/home/jiut107/cnn2/CNN/Syn/../../../SMIC18/mem/S018V3EBCDSP_X20Y4D128_PR_tt_1.8_25.lib'.
+INFO:    Library 'S018V3EBCDSP_X20Y4D128_PR_tt_1.8_25' is compiled
+INFO:    Reading file
+         '/cluster/home/jiut107/cnn2/CNN/Syn/../../../SMIC18/lib/SP018W_V1p8_max.lib'.
+INFO:    Library 'SP018W_V1p8_max' is compiled
+INFO:    Library
+         'multi_target_lib:slow:S018V3EBCDSP_X20Y4D128_PR_tt_1.8_25:SP018W_V1p8_max'
+         is compiled
+INFO:    The merge of multiple libraries 'slow.lib
+         S018V3EBCDSP_X20Y4D128_PR_tt_1.8_25.lib SP018W_V1p8_max.lib' is set
+         to target_lib!
+0
+CMD:     set link_priority "slow S018V3EBCDSP_X20Y4D128_PR_tt_1.8_25
+         SP018W_V1p8_max"
+INFO:    link_priority is changed! (CMD_INFO_007)
+0
+CMD:     read_design -format verilog {
+CMD:         ../rtl/sram_256x80.v
+CMD:         ../rtl/SigLUT.v
+CMD:         ../rtl/param_rom.v
+CMD:         ../rtl/mac_array.v
+CMD:         ../rtl/post_process.v
+CMD:         ../rtl/output_staging_buffer.v
+CMD:         ../rtl/maxpool_unit.v
+CMD:         ../rtl/line_buffer.v
+CMD:         ../rtl/cnn_controller.v
+CMD:         ../rtl/cnn_top.v
+CMD:         ../rtl/cnn_chip.v
+CMD:     }
+INFO:    The default VHDL library search path is now
+         "/cluster/apps/jiutian/empyrean/zensyn_z25.12_2e0365ed.rel/zensyn/zensyn_z25.12_2e0365ed.rel/etc/vhdl_packages/vhdl_1993/bin"
+INFO:     (PSR_22762)
+INFO:    Read design
+         '/cluster/home/jiut107/cnn2/CNN/Syn/work/../rtl/sram_256x80.v'
+         (PSR_13608)
+INFO:    Read design
+         '/cluster/home/jiut107/cnn2/CNN/Syn/work/../rtl/SigLUT.v' (PSR_13608)
+INFO:    Read design
+         '/cluster/home/jiut107/cnn2/CNN/Syn/work/../rtl/param_rom.v'
+         (PSR_13608)
+INFO:    Read design
+         '/cluster/home/jiut107/cnn2/CNN/Syn/work/../rtl/mac_array.v'
+         (PSR_13608)
+INFO:    Read design
+         '/cluster/home/jiut107/cnn2/CNN/Syn/work/../rtl/post_process.v'
+         (PSR_13608)
+INFO:    Read design
+         '/cluster/home/jiut107/cnn2/CNN/Syn/work/../rtl/output_staging_buffer.v'
+         (PSR_13608)
+INFO:    Read design
+         '/cluster/home/jiut107/cnn2/CNN/Syn/work/../rtl/maxpool_unit.v'
+         (PSR_13608)
+INFO:    Read design
+         '/cluster/home/jiut107/cnn2/CNN/Syn/work/../rtl/line_buffer.v'
+         (PSR_13608)
+INFO:    Read design
+         '/cluster/home/jiut107/cnn2/CNN/Syn/work/../rtl/cnn_controller.v'
+         (PSR_13608)
+INFO:    Read design
+         '/cluster/home/jiut107/cnn2/CNN/Syn/work/../rtl/cnn_top.v'
+         (PSR_13608)
+INFO:    Read design
+         '/cluster/home/jiut107/cnn2/CNN/Syn/work/../rtl/cnn_chip.v'
+         (PSR_13608)
+0
+CMD:     set current_design cnn_chip
+0
+CMD:     link_design
+INFO:    Analyze Module 'cnn_chip'
+         (/cluster/home/jiut107/cnn2/CNN/Syn/rtl/cnn_chip.v:9) (PSR_19360)
+INFO:    Analyze Module 'cnn_top'
+         (/cluster/home/jiut107/cnn2/CNN/Syn/rtl/cnn_top.v:3) (PSR_19360)
+INFO:    Analyze Module 'cnn_controller'
+         (/cluster/home/jiut107/cnn2/CNN/Syn/rtl/cnn_controller.v:11)
+         (PSR_19360)
+INFO:    Analyze Module 'sram_256x80'
+         (/cluster/home/jiut107/cnn2/CNN/Syn/rtl/sram_256x80.v:1) (PSR_19360)
+INFO:    Analyze Module 'line_buffer'
+         (/cluster/home/jiut107/cnn2/CNN/Syn/rtl/line_buffer.v:13) (PSR_19360)
+INFO:    Analyze Module 'param_rom'
+         (/cluster/home/jiut107/cnn2/CNN/Syn/rtl/param_rom.v:11) (PSR_19360)
+INFO:    Analyze Module 'mac_array'
+         (/cluster/home/jiut107/cnn2/CNN/Syn/rtl/mac_array.v:3) (PSR_19360)
+INFO:    Analyze Module 'post_process'
+         (/cluster/home/jiut107/cnn2/CNN/Syn/rtl/post_process.v:3) (PSR_19360)
+INFO:    Analyze Module 'output_staging_buffer'
+         (/cluster/home/jiut107/cnn2/CNN/Syn/rtl/output_staging_buffer.v:12)
+         (PSR_19360)
+INFO:    Analyze Module 'maxpool_unit'
+         (/cluster/home/jiut107/cnn2/CNN/Syn/rtl/maxpool_unit.v:3) (PSR_19360)
+INFO:    Analyze Module 'sigmoid_lut'
+         (/cluster/home/jiut107/cnn2/CNN/Syn/rtl/SigLUT.v:3) (PSR_19360)
+INFO:    Break the bus net 'weight_1[19711:0]' on module 'param_rom'
+INFO:    Break the bus net 'cur_M0[15:0]' on module 'post_process'
+INFO:    Break the bus net 'cur_n[3:0]' on module 'post_process'
+INFO:    Break the bus net 'buffer[255:0]' on module 'output_staging_buffer'
+INFO:    Break the bus net 'lut_val[31:0]' on module 'sigmoid_lut'
+INFO:    Break the bus net 'mac_valid_pipe[1:0]' on module 'cnn_top'
+INFO:    Break the bus net 'act_raddr_delay[9:0]' on module 'cnn_top'
+INFO:    Break the bus net 'conv1_act_in[255:0]' on module 'cnn_top'
+WARNING: Reference of instance 'inst_CNN_top' in design 'cnn_chip' to
+         'cnn_top' cannot be resolved. (NTL_WARN_007)
+0
+CMD:     make_unique
+0
+CMD:     source ../scripts/cnn.sdc
+INFO:    Sourcing file /cluster/home/jiut107/cnn2/CNN/Syn/scripts/cnn.sdc.
+         (CMD_INFO_004)
+CMD:     get_ports clk
+0
+CMD:     create_clock -name clk -period 10.0 [get_ports clk]
+0
+CMD:     all_inputs
+0
+CMD:     set_input_delay -max 2.0 -clock clk [all_inputs]
+0
+CMD:     all_outputs
+0
+CMD:     set_output_delay -max 2.0 -clock clk [all_outputs]
+0
+CMD:     get_clocks clk
+0
+CMD:     set_clock_uncertainty 0.5 [get_clocks clk]
+0
+0
+CMD:     optimize
+*******************************************************************************
+* Report  : Optimize Report                                                   *
+* Command : optimize                                                          *
+* Design  : cnn_chip                                                          *
+* Version : main_1229_2e0365ed.rel                                            *
+* Date    : 6:44 PM, 20-Apr-26                                                *
+*******************************************************************************
+*******************************************************************************
+* Timing check / optimization:                                                *
+*  - max delay:                       check:  ON;  opt:  ON                   *
+*  - min delay:                       check: OFF;  opt: OFF                   *
+*  - clock path:                      check:  ON;  opt: OFF                   *
+*  - async path (recovery & removal): check: OFF;  opt: OFF                   *
+*  (use "sta_disable_recovery_removal_checks" var to turn on/off async check) *
+*  (use "optimize_path_to_async_pin" var to turn on/off async opt)            *
+*                                                                             *
+* DRC check / fixing:                                                         *
+*  - data path:                       check:  ON;  fix:  ON                   *
+*  - clock path:                      check: OFF;  fix: OFF                   *
+*  - async path (recovery & removal): check:  ON;  fix:  ON                   *
+*  (use "sta_disable_async_drc_checks" var to turn on/off check)              *
+*  (use 'set_drc_option -data_path | -clock_path | -async_path' cmd           *
+*   to control fixing)                                                        *
+*******************************************************************************
+WARNING: Reference of instance 'inst_CNN_top' in design 'cnn_chip' to
+         'cnn_top' cannot be resolved. (NTL_WARN_007)
+
+Beginning Hierarchical Optimization
+===================================
+
+
+  Optimizing Design cnn_chip (1 1)
+
+
+
+Beginning Incremental Optimization (High Mapping Effort)
+==================================
+
+
+                                   LEAKAGE     WORST MAX   WORST MIN  END
+ CPU TIME           AREA            POWER        SLACK       SLACK    POINT
+---------------------------------------------------------------------
+----------
+ 00h00m52s       4692240.00                     0.0000             
+inst_CNN_top/clk  
+ 00h00m52s       4692240.00                     0.0000             
+inst_CNN_top/clk  
+ 00h00m52s       4692240.00                     0.0000             
+inst_CNN_top/clk  
+ 00h00m52s       4692240.00                     0.0000             
+inst_CNN_top/clk  
+ 00h00m52s       4692240.00                     0.0000             
+inst_CNN_top/clk  
+ 00h00m52s       4692240.00                     0.0000             
+inst_CNN_top/clk  
+ 00h00m52s       4692240.00                     0.0000             
+inst_CNN_top/clk  
+
+Optimization Completed
+======================
+
+0
+CMD:     analyze_constraint -all_violators > ../reports/violators_cnn.rpt
+0
+CMD:     analyze_area > ../reports/area_cnn.rpt
+0
+CMD:     analyze_timing > ../reports/timing_cnn.rpt
+0
+CMD:     write_design -format verilog -hierarchy -o ../outputs/cnn_chip_syn.v
+0
+CMD:     write_sdc ../outputs/cnn_chip_syn.sdc
+0
+
+Warning/Error message (message ID)                                     Number
+-----------------------------------------------------------------------------
+WARNING:                                            (NTL_WARN_007)          2
+Reference of instance '' in design '' to '' cannot be resolved.
+-----------------------------------------------------------------------------
+Errors: 0, Warnings: 2
+
+CPU time: 58.98 sec
+Quit zs_shell.  Thank you!

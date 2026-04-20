@@ -10,7 +10,8 @@ localparam LUT_SIZE = 256;
 //使用寄存器数组实现查找表，预先计算好Sigmoid函数的256个输出值
 reg [31:0] lut[LUT_SIZE-1:0];
 
-initial begin
+always @(*) 
+    begin
     lut[128] = 32'h364e5111; // x = -128, f(x) = 0.000003
     lut[129] = 32'h3663d2d3; // x = -127, f(x) = 0.000003
     lut[130] = 32'h367b9283; // x = -126, f(x) = 0.000004

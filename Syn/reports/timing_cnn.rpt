@@ -1,0 +1,54 @@
+
+
+*******************************************************************************
+* Report  : Timing                                                            *
+* Command : analyze_timing > ../reports/timing_cnn.rpt                        *
+* Design  : cnn_chip                                                          *
+* Version : main_1229_2e0365ed.rel                                            *
+* Date    : 6:44 PM, 20-Apr-26                                                *
+*******************************************************************************
+*******************************************************************************
+* MAX Timing Analysis                                                         *
+* Analysis type : bc_wc                                                       *
+* Environment Library : SP018W_V1p8_max                                       *
+* Operating Conditions: SP018W_V1p8_max                                       *
+* Wire Load Library : SP018W_V1p8_max                                         *
+* Wire Load Model Mode:          enclosed                                     *
+* Wire Load Model From:          area-based                                   *
+* Wire Load Model On Top Design:                                              *
+*******************************************************************************
+*******************************************************************************
+* Legend :                                                                    *
+* re: rising-edge                                                             *
+* fe: falling-edge                                                            *
+* pl: positive-level                                                          *
+* nl: negative-level                                                          *
+* ': inverted clock                                                           *
+* *: delay is annotated from SDF                                              *
+* &: delay is from BBox/RC-tree                                               *
+* #: delay is set by command                                                  *
+*******************************************************************************
+
+
+*******************************************************************************
+* Report  : Critical paths for each clock group                               *
+* Design  : cnn_chip                                                          *
+*******************************************************************************
+
+
+Beginpoint: clk (input port clocked by clk)
+Endpoint: inst_CNN_top (black box)
+Path Group: (none)
+Delay Type: max
+
+Point (Gate Type)                                    Inc.         Path  
+------------------------------------------------------------------------
+clock tree delay (ideal)                             0.00         0.00
+input external delay                                 2.00         2.00 R
+clk (input port)                                     0.00         2.00 R
+PIW_clk/C (PIW)                                      0.78         2.78 R
+inst_CNN_top/clk (BLKBOX)                            0.00         2.78 R
+data arrival time                                                 2.78
+------------------------------------------------------------------------
+(path unconstrained)                                              2.78
+

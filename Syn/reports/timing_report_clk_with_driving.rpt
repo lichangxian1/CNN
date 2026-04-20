@@ -1,0 +1,68 @@
+
+
+*******************************************************************************
+* Report  : Timing                                                            *
+* Command : analyze_timing > ../reports/timing_report_clk_with_driving.rpt    *
+* Design  : cnn_chip                                                          *
+* Version : main_1229_2e0365ed.rel                                            *
+* Date    : 9:09 PM, 26-Mar-26                                                *
+*******************************************************************************
+*******************************************************************************
+* MAX Timing Analysis                                                         *
+* Analysis type : bc_wc                                                       *
+* Environment Library : slow                                                  *
+* Operating Conditions: slow                                                  *
+* Wire Load Library : slow                                                    *
+* Wire Load Model Mode:          segmented                                    *
+* Wire Load Model From:          default                                      *
+* Wire Load Model On Top Design:                                              *
+*******************************************************************************
+*******************************************************************************
+* Legend :                                                                    *
+* re: rising-edge                                                             *
+* fe: falling-edge                                                            *
+* pl: positive-level                                                          *
+* nl: negative-level                                                          *
+* ': inverted clock                                                           *
+* *: delay is annotated from SDF                                              *
+* &: delay is from BBox/RC-tree                                               *
+* #: delay is set by command                                                  *
+*******************************************************************************
+
+
+*******************************************************************************
+* Report  : Critical paths for each clock group                               *
+* Design  : cnn_chip                                                          *
+*******************************************************************************
+
+
+Beginpoint: inst_CNN/outBuffer2/data_out_reg[29] (re-triggered flip-flop clocked by clk)
+Endpoint: data_out[28] (output port clocked by clk)
+Path Group: clk
+Delay Type: max
+
+Point (Gate Type)                                    Inc.         Path  
+------------------------------------------------------------------------
+clock clk (re)                                       0.00         0.00
+clock tree delay (ideal)                             4.30         4.30
+inst_CNN/outBuffer2/data_out_reg[29]/CK (DFFRHQX4)
+                                                     0.00         4.30 R
+inst_CNN/outBuffer2/data_out_reg[29]/Q (DFFRHQX4)
+                                                     0.37         4.67 R
+inst_CNN/u118683/Y (BUFX20)                          0.22         4.89 R
+inst_CNN/data_out[28] (CNN_top)                      0.00         4.89 R
+PO8W_dout28/PAD (PO8W)                               1.65         6.54 R
+data_out[28] (output port)                           0.00         6.54 R
+data arrival time                                                 6.54
+
+clock clk (re)                                       7.00         7.00
+clock tree delay (ideal)                             4.30        11.30
+clock uncertainty                                   -0.50        10.80
+output external delay                               -5.00         5.80
+data required time                                                5.80
+------------------------------------------------------------------------
+data required time                                                5.80
+data arrival time                                                -6.54
+------------------------------------------------------------------------
+slack (VIOLATED)                                                 -0.74
+

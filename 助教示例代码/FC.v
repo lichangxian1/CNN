@@ -5,7 +5,7 @@ module FC(
     input wire                          enable,
     input wire signed [255:0]           data_in, //32*8bit
     input wire signed [4607:0]          weight,  //32*144bit
-    input wire signed [63:0]            data_out //2*32bit两个通道的结果
+    output wire signed [63:0]           data_out //2*32bit两个通道的结果
 );
 
 genvar k;

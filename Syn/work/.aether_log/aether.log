@@ -1,0 +1,16 @@
+LC_Check out license DM version 1.0...
+[2026-03-26 21:16:17.432169] [0x00007fb89c8d45c0] [info]    checkOut success: DM 1.0
+
+                          Empyrean Aether
+                Version 2025.09, Build on 10/17/2025
+                        For [linux26-x86_64]
+                      Copyright (c) 2009-2025
+                    Empyrean Technology Co.,Ltd.
+                        ALL RIGHTS RESERVED
+
+OpenAccess 2.2 is loaded from /cluster/apps/jiutian/empyrean/aether_2025.09_linux-x86_64_rhel6_20251018/openaccess/lib/linux_rhel60_64/opt
+Load setting file '/cluster/apps/jiutian/empyrean/aether_2025.09_linux-x86_64_rhel6_20251018/tools/aether/data/aether.ini'.
+Load '/cluster/apps/jiutian/empyrean/aether_2025.09_linux-x86_64_rhel6_20251018/tools/aether/data/display.drf'.
+Load 'display.drf'.
+Load initialize file 'emyLibInit.tcl' for library 'analog'.
+Load initialize file 'emyLibInit.tcl' for library 'amsLib'.
