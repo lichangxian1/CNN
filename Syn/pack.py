@@ -6,7 +6,7 @@ def pack_codebase_to_md(root_dir, output_file="CNN.md", extensions=('.py', '.v',
     用于将多文件 EDA 架构坍缩为单一 Markdown 文件，严格保留路径拓扑上下文，并剔除污染源。
     """
     # 目录级物理隔离：防止扫描无用缓存和输出结果
-    ignore_dirs = {'outputs','report' ,'scripts' ,'work','tb','data'}
+    ignore_dirs = {'outputs','report' ,'scripts' ,'work','tb','data','助教示例代码'}
     
     # 文件级物理隔离：防止脚本自我吞噬或引入无关测试干扰 AI 推理
     ignore_files = {'pack.py','mac_array_self_check_tb.v' ,'tb_mac_array.v'}

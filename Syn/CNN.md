@@ -762,13 +762,22 @@ module output_staging_buffer (
             
             if (out_valid) begin
                 if (layer_mode_sync == 2'd0) begin
-                    // 【Conv1】: 8 批 32-bit 拼装 (低3位恰好是 0~7)
-                    buffer[act_waddr_sync[2:0] * 32 +: 32] <= act_out_flat[31:0];
+                    // 【Conv1】: 8 批 32-bit 拼装，使用标准 case 替代动态切片
+                    case (act_waddr_sync[2:0])
+                        3'd0: buffer[31:0]    <= act_out_flat[31:0];
+                        3'd1: buffer[63:32]   <= act_out_flat[31:0];
+                        3'd2: buffer[95:64]   <= act_out_flat[31:0];
+                        3'd3: buffer[127:96]  <= act_out_flat[31:0];
+                        3'd4: buffer[159:128] <= act_out_flat[31:0];
+                        3'd5: buffer[191:160] <= act_out_flat[31:0];
+                        3'd6: buffer[223:192] <= act_out_flat[31:0];
+                        3'd7: buffer[255:224] <= act_out_flat[31:0];
+                    endcase
+                    
                     if (act_waddr_sync[2:0] == 3'd7) begin
                         staging_wen   <= 1'b0; // 满仓！发车！
-                        // 巧妙拼接：把刚刚算出的第8批和寄存器里存的前7批瞬间拼合
                         staging_wdata <= {act_out_flat[31:0], buffer[223:0]};
-                        staging_waddr <= act_waddr_sync[9:3]; // 逻辑地址 / 8 = 真实物理地址
+                        staging_waddr <= act_waddr_sync[9:3]; 
                     end
                 end 
                 else if (layer_mode_sync == 2'd1) begin
@@ -778,12 +787,18 @@ module output_staging_buffer (
                     staging_waddr <= act_waddr_sync;
                 end 
                 else if (layer_mode_sync == 2'd2) begin
-                    // 【PWConv】: 4 批 64-bit 拼装 (低2位恰好是 0~3)
-                    buffer[act_waddr_sync[1:0] * 64 +: 64] <= act_out_flat[63:0];
+                    // 【PWConv】: 4 批 64-bit 拼装，使用标准 case 替代动态切片
+                    case (act_waddr_sync[1:0])
+                        2'd0: buffer[63:0]    <= act_out_flat[63:0];
+                        2'd1: buffer[127:64]  <= act_out_flat[63:0];
+                        2'd2: buffer[191:128] <= act_out_flat[63:0];
+                        2'd3: buffer[255:192] <= act_out_flat[63:0];
+                    endcase
+                    
                     if (act_waddr_sync[1:0] == 2'd3) begin
                         staging_wen   <= 1'b0;
                         staging_wdata <= {act_out_flat[63:0], buffer[191:0]};
-                        staging_waddr <= act_waddr_sync[9:2]; // 逻辑地址 / 4 = 真实物理地址
+                        staging_waddr <= act_waddr_sync[9:2]; 
                     end
                 end
             end

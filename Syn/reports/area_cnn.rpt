@@ -5,7 +5,7 @@
 * Command : analyze_area > ../reports/area_cnn.rpt                            *
 * Design  : cnn_chip                                                          *
 * Version : main_1229_2e0365ed.rel                                            *
-* Date    : 6:44 PM, 20-Apr-26                                                *
+* Date    : 12:58 AM, 22-Apr-26                                               *
 *******************************************************************************
 *******************************************************************************
 * Legend :                                                                    *
@@ -21,43 +21,705 @@ Design: cnn_chip
 
 Instance type                           Instances     Instance(%)
 -----------------------------------------------------------------
-Combinational library cell instances:         294           100.00
-    - Buffer instances:                      (294)         (100.00)
-    - Inverter instances:                      (0)         ( 0.00)
-    - Other instances:                         (0)         ( 0.00)
-Sequential library cell instances:              0            0.00
+Combinational library cell instances:      222701           95.01
+    - Buffer instances:                       (76)         ( 0.03)
+    - Inverter instances:                  (13340)         ( 5.69)
+    - Other instances:                    (209285)         (89.29)
+Sequential library cell instances:          11682            4.98
+RAM/ROM instances:                              4            0.00
 -----------------------------------------------------------------
-Total instances:                              294          100.00
+Total instances:                           234387          100.00
 
-Total number of black_box instances:            1
 
 Instance type                       Instance Area         Area(%)
 -----------------------------------------------------------------
-Combinational library cell area:       4692240.00           100.00
-    - Buffer cell area:               (4692240.00)         (100.00)
-    - Inverter cell area:                   (0.00)         ( 0.00)
-    - Other cell area:                      (0.00)         ( 0.00)
-Sequential library cell area:                0.00            0.00
+Combinational library cell area:       4048265.94           73.25
+    - Buffer cell area:                (527252.14)         ( 9.54)
+    - Inverter cell area:               (88761.66)         ( 1.61)
+    - Other cell area:                (3432252.14)         (62.10)
+Sequential library cell area:           838582.13           15.17
+RAM/ROM cell area:                  639884.69           11.58
 -----------------------------------------------------------------
-Total library cell area:               4692240.00          100.00
+Total library cell area:               5526732.75          100.00
 
-Wire load model:                                 
-Net area:                                    0.00
+Net area:                               undefined
 
-Total area:                            4692240.00
+Total area:                            5526732.75
 =================================================================
 
 =================================================================
  Library                                Instances     Instance(%)
 -----------------------------------------------------------------
- SP018W_V1p8_max                              294          100.00
+ SP018W_V1p8_max                               42            0.02
+ S018V3EBCDSP_X20Y4D128_PR_tt_1.8_25                    4            0.00
+ slow                                      234341           99.98
 =================================================================
 
 ===============================================================================
  Gate                   Type  Counts         Area        Area Sum  Library
 -------------------------------------------------------------------------------
- PIW                     (C)     260     15960.00      4149600.00  SP018W_V1p8_max
- PO8W                    (C)      34     15960.00       542640.00  SP018W_V1p8_max
- cnn_top                 (B)       1         0.00            0.00
+ AND2X1                  (C)     113        13.31         1503.53  slow
+ AND2X2                  (C)    4526        13.31        60221.15  slow
+ AND2XL                  (C)    3079        13.31        40967.94  slow
+ AND3X1                  (C)      61        16.63         1014.55  slow
+ AND3X2                  (C)    1365        16.63        22702.68  slow
+ AND3XL                  (C)     435        16.63         7234.92  slow
+ AND4X1                  (C)      20        19.96          399.17  slow
+ AND4X2                  (C)    1183        19.96        23610.79  slow
+ AND4XL                  (C)     213        19.96         4251.14  slow
+ AOI211X1                (C)    2156        16.63        35858.59  slow
+ AOI211XL                (C)     542        16.63         9014.54  slow
+ AOI21X1                 (C)   13311        13.31       177110.84  slow
+ AOI21XL                 (C)    5097        13.31        67818.64  slow
+ AOI221X1                (C)     335        23.28         7800.41  slow
+ AOI221XL                (C)      76        23.28         1769.64  slow
+ AOI222X1                (C)     157        26.61         4177.96  slow
+ AOI222XL                (C)      16        26.61          425.78  slow
+ AOI22X1                 (C)    6869        16.63       114245.21  slow
+ AOI22XL                 (C)    1513        16.63        25164.22  slow
+ AOI2BB1X1               (C)    3542        16.63        58910.54  slow
+ AOI2BB1XL               (C)    2638        16.63        43875.22  slow
+ AOI2BB2X1               (C)     223        23.28         5192.51  slow
+ AOI2BB2XL               (C)      45        23.28         1047.82  slow
+ AOI31X1                 (C)    1571        16.63        26128.87  slow
+ AOI31XL                 (C)     257        16.63         4274.42  slow
+ AOI32X1                 (C)     289        23.28         6729.31  slow
+ AOI32XL                 (C)      53        23.28         1234.09  slow
+ AOI33X1                 (C)      32        26.61          851.56  slow
+ AOI33XL                 (C)       5        26.61          133.06  slow
+ BMXX1                   (C)       4        63.20          252.81  slow
+ BUFX3                   (C)      43        13.31          572.14  slow
+ DFFHQXL                 (S)     107        53.22         5694.80  slow
+ DFFRHQXL                (S)    7107        69.85       496455.23  slow
+ DFFRX1                  (S)      26        76.51         1989.19  slow
+ DFFRXL                  (S)    4127        76.51       315745.22  slow
+ DFFSX1                  (S)      16        63.20         1011.23  slow
+ DFFSXL                  (S)     117        63.20         7394.59  slow
+ DFFX1                   (S)       2        56.55          113.10  slow
+ DFFXL                   (S)     180        56.55        10178.78  slow
+ INVX1                   (C)   10191         6.65        67798.69  slow
+ INVX4                   (C)       2        13.31           26.61  slow
+ INVXL                   (C)    3147         6.65        20936.36  slow
+ MX2X1                   (C)     144        26.61         3832.01  slow
+ MX2XL                   (C)     174        26.61         4630.35  slow
+ MXI2X1                  (C)    5157        23.28       120079.71  slow
+ MXI2XL                  (C)    1931        23.28        44962.95  slow
+ NAND2BX1                (C)    8295        13.31       110369.95  slow
+ NAND2BX2                (C)       2        19.96           39.92  slow
+ NAND2BXL                (C)    2504        13.31        33317.22  slow
+ NAND2X1                 (C)   21959         9.98       219133.26  slow
+ NAND2X2                 (C)       1        16.63           16.63  slow
+ NAND2XL                 (C)    5598         9.98        55863.56  slow
+ NAND3BX1                (C)     704        16.63        11708.93  slow
+ NAND3BXL                (C)     189        16.63         3143.45  slow
+ NAND3X1                 (C)    3894        13.31        51812.01  slow
+ NAND3XL                 (C)     789        13.31        10498.12  slow
+ NAND4BBX1               (C)       6        26.61          159.67  slow
+ NAND4BBXL               (C)       2        26.61           53.22  slow
+ NAND4BXL                (C)     289        19.96         5767.98  slow
+ NAND4X1                 (C)    2783        16.63        46286.86  slow
+ NAND4XL                 (C)     226        16.63         3758.83  slow
+ NOR2BX1                 (C)    7007        13.31        93232.34  slow
+ NOR2BXL                 (C)    2481        13.31        33011.19  slow
+ NOR2X1                  (C)   16023         9.98       159896.73  slow
+ NOR2XL                  (C)    8717         9.98        86988.69  slow
+ NOR3BX1                 (C)     158        19.96         3153.43  slow
+ NOR3BXL                 (C)     126        19.96         2514.76  slow
+ NOR3X1                  (C)    2219        13.31        29525.13  slow
+ NOR3XL                  (C)    1188        13.31        15807.05  slow
+ NOR4BBX1                (C)       3        26.61           79.83  slow
+ NOR4BBXL                (C)       4        26.61          106.44  slow
+ NOR4BX1                 (C)     147        19.96         2933.88  slow
+ NOR4BXL                 (C)      70        19.96         1397.09  slow
+ NOR4X1                  (C)     189        19.96         3772.14  slow
+ NOR4XL                  (C)      70        19.96         1397.09  slow
+ OAI211X1                (C)     896        19.96        17882.73  slow
+ OAI211XL                (C)     285        19.96         5688.14  slow
+ OAI21XL                 (C)   18712        13.31       248974.39  slow
+ OAI221XL                (C)     459        23.28        10687.72  slow
+ OAI222XL                (C)     190        26.61         5056.13  slow
+ OAI22X1                 (C)    2979        19.96        59456.08  slow
+ OAI22XL                 (C)     881        19.96        17583.35  slow
+ OAI2BB1X1               (C)    3616        16.63        60141.31  slow
+ OAI2BB1XL               (C)    1152        16.63        19160.06  slow
+ OAI2BB2X1               (C)     615        23.28        14320.15  slow
+ OAI2BB2XL               (C)      81        23.28         1886.07  slow
+ OAI31X1                 (C)     651        19.96        12992.92  slow
+ OAI31XL                 (C)     107        19.96         2135.55  slow
+ OAI32X1                 (C)     463        23.28        10780.86  slow
+ OAI32XL                 (C)      93        23.28         2165.49  slow
+ OAI33X1                 (C)      45        26.61         1197.50  slow
+ OAI33XL                 (C)       9        26.61          239.50  slow
+ OR2X1                   (C)     111        13.31         1476.92  slow
+ OR2X2                   (C)    3044        13.31        40502.25  slow
+ OR2XL                   (C)    2053        13.31        27316.40  slow
+ OR3XL                   (C)    1431        16.63        23800.39  slow
+ OR4X1                   (C)      13        19.96          259.46  slow
+ OR4X2                   (C)     179        19.96         3572.55  slow
+ OR4XL                   (C)     288        19.96         5748.02  slow
+ PIW                     (C)       3     15960.00        47880.00  SP018W_V1p8_max
+ PO8W                    (C)      30     15960.00       478800.00  SP018W_V1p8_max
+ PVDD1CANPW              (C)       3     15960.00        47880.00  SP018W_V1p8_max
+ PVSS1CANPW              (C)       6     15960.00        95760.00  SP018W_V1p8_max
+ S018V3EBCDSP_X20Y4D128_PR (S)
+                                   4    159971.17       639884.69  S018V3EBCDSP_X20Y4D128_PR_tt_1.8_25
+ XNOR2X1                 (C)   11901        26.61       316699.90  slow
+ XNOR2XL                 (C)    3904        26.61       103890.13  slow
+ XNOR3X2                 (C)     623        59.88        37302.25  slow
+ XOR2X1                  (C)    8967        26.61       238622.63  slow
+ XOR2XL                  (C)    2373        26.61        63148.38  slow
+ XOR3X2                  (C)     380        59.88        22752.58  slow
 ===============================================================================
 
+
+=================================================================
+Design: cnn_chip
+Total number of library cell instances:                    234387
+Number of library cell instances under current level:          35
+Number of subdesign instances under current level:              1
+
+Combinational library cell area under current level:     31920.00
+Sequential library cell area under current level:            0.00
+Buffer cell area under current level:                   526680.00
+Inverter cell area under current level:                      0.00
+Subdesign instance area:                               4968132.75
+Net area:                                               undefined
+
+Total area:                                            5526732.75
+
+-------------------------------------------------------------------------------
+ Gate                   Type  Counts         Area        Area Sum  Library
+-------------------------------------------------------------------------------
+ PIW                     (C)       3     15960.00        47880.00  SP018W_V1p8_max
+ PO8W                    (C)      30     15960.00       478800.00  SP018W_V1p8_max
+ PVDD1CANPW              (C)       1     15960.00        15960.00  SP018W_V1p8_max
+ PVSS1CANPW              (C)       1     15960.00        15960.00  SP018W_V1p8_max
+ cnn_top                 (M)       1   4968132.75      4968132.75  __moduleLib__
+===============================================================================
+
+
+=================================================================
+Design: cnn_top
+Total number of library cell instances:                    234352
+Number of library cell instances under current level:       18748
+Number of subdesign instances under current level:              4
+
+Combinational library cell area under current level:    290341.23
+Sequential library cell area under current level:       315568.92
+Buffer cell area under current level:                      465.70
+Inverter cell area under current level:                   8023.28
+RAM/ROM cell area under current level:                  639884.69
+Subdesign instance area:                               3713848.94
+Net area:                                               undefined
+
+Total area:                                            4968132.75
+
+-------------------------------------------------------------------------------
+ Gate                   Type  Counts         Area        Area Sum  Library
+-------------------------------------------------------------------------------
+ AND2X2                  (C)     161        13.31         2142.20  slow
+ AND2XL                  (C)      87        13.31         1157.59  slow
+ AND3X1                  (C)       1        16.63           16.63  slow
+ AND3XL                  (C)      28        16.63          465.70  slow
+ AND4X2                  (C)       1        19.96           19.96  slow
+ AND4XL                  (C)      10        19.96          199.58  slow
+ AOI211X1                (C)       7        16.63          116.42  slow
+ AOI211XL                (C)      55        16.63          914.76  slow
+ AOI21X1                 (C)     252        13.31         3353.01  slow
+ AOI21XL                 (C)     342        13.31         4550.52  slow
+ AOI221X1                (C)       5        23.28          116.42  slow
+ AOI221XL                (C)      33        23.28          768.40  slow
+ AOI222XL                (C)       5        26.61          133.06  slow
+ AOI22X1                 (C)      58        16.63          964.66  slow
+ AOI22XL                 (C)     662        16.63        11010.38  slow
+ AOI2BB1X1               (C)       5        16.63           83.16  slow
+ AOI2BB1XL               (C)     165        16.63         2744.28  slow
+ AOI2BB2XL               (C)       2        23.28           46.57  slow
+ AOI31X1                 (C)       3        16.63           49.90  slow
+ AOI31XL                 (C)      40        16.63          665.28  slow
+ AOI32X1                 (C)       1        23.28           23.28  slow
+ AOI32XL                 (C)      14        23.28          325.99  slow
+ BUFX3                   (C)      35        13.31          465.70  slow
+ DFFHQXL                 (S)      86        53.22         4577.13  slow
+ DFFRHQXL                (S)     253        69.85        17673.16  slow
+ DFFRX1                  (S)       6        76.51          459.04  slow
+ DFFRXL                  (S)    3682        76.51       281699.52  slow
+ DFFSX1                  (S)       2        63.20          126.40  slow
+ DFFSXL                  (S)      18        63.20         1137.63  slow
+ DFFX1                   (S)       2        56.55          113.10  slow
+ DFFXL                   (S)     173        56.55         9782.94  slow
+ INVX1                   (C)     574         6.65         3818.71  slow
+ INVXL                   (C)     632         6.65         4204.57  slow
+ MX2X1                   (C)       8        26.61          212.89  slow
+ MX2XL                   (C)       3        26.61           79.83  slow
+ MXI2X1                  (C)    3329        23.28        77515.10  slow
+ MXI2XL                  (C)     191        23.28         4447.40  slow
+ NAND2BX1                (C)       9        13.31          119.75  slow
+ NAND2BXL                (C)     148        13.31         1969.23  slow
+ NAND2X1                 (C)      12         9.98          119.75  slow
+ NAND2XL                 (C)     126         9.98         1257.38  slow
+ NAND3BX1                (C)       9        16.63          149.69  slow
+ NAND3BXL                (C)       8        16.63          133.06  slow
+ NAND3X1                 (C)       8        13.31          106.44  slow
+ NAND3XL                 (C)      41        13.31          545.53  slow
+ NAND4BBX1               (C)       1        26.61           26.61  slow
+ NAND4BBXL               (C)       2        26.61           53.22  slow
+ NAND4BXL                (C)      13        19.96          259.46  slow
+ NAND4X1                 (C)       2        16.63           33.26  slow
+ NAND4XL                 (C)      16        16.63          266.11  slow
+ NOR2BX1                 (C)      10        13.31          133.06  slow
+ NOR2BXL                 (C)     103        13.31         1370.48  slow
+ NOR2X1                  (C)    2645         9.98        26394.98  slow
+ NOR2XL                  (C)      84         9.98          838.25  slow
+ NOR3BX1                 (C)       1        19.96           19.96  slow
+ NOR3BXL                 (C)      21        19.96          419.13  slow
+ NOR3X1                  (C)      12        13.31          159.67  slow
+ NOR3XL                  (C)     235        13.31         3126.82  slow
+ NOR4BBX1                (C)       1        26.61           26.61  slow
+ NOR4BBXL                (C)       2        26.61           53.22  slow
+ NOR4BX1                 (C)       2        19.96           39.92  slow
+ NOR4BXL                 (C)      24        19.96          479.00  slow
+ NOR4XL                  (C)       1        19.96           19.96  slow
+ OAI211X1                (C)       1        19.96           19.96  slow
+ OAI211XL                (C)      20        19.96          399.17  slow
+ OAI21XL                 (C)    1454        13.31        19346.34  slow
+ OAI221XL                (C)      23        23.28          535.55  slow
+ OAI222XL                (C)      23        26.61          612.06  slow
+ OAI22X1                 (C)    1955        19.96        39018.67  slow
+ OAI22XL                 (C)     229        19.96         4570.47  slow
+ OAI2BB1X1               (C)       8        16.63          133.06  slow
+ OAI2BB1XL               (C)     169        16.63         2810.81  slow
+ OAI2BB2X1               (C)     272        23.28         6333.47  slow
+ OAI2BB2XL               (C)      28        23.28          651.97  slow
+ OAI31XL                 (C)      17        19.96          339.29  slow
+ OAI32X1                 (C)       5        23.28          116.42  slow
+ OAI32XL                 (C)      22        23.28          512.27  slow
+ OAI33X1                 (C)       1        26.61           26.61  slow
+ OAI33XL                 (C)       4        26.61          106.44  slow
+ OR2XL                   (C)      20        13.31          266.11  slow
+ OR3XL                   (C)       8        16.63          133.06  slow
+ OR4XL                   (C)       7        19.96          139.71  slow
+ PVDD1CANPW              (C)       1     15960.00        15960.00  SP018W_V1p8_max
+ PVSS1CANPW              (C)       3     15960.00        47880.00  SP018W_V1p8_max
+ S018V3EBCDSP_X20Y4D128_PR (S)
+                                   4    159971.17       639884.69  S018V3EBCDSP_X20Y4D128_PR_tt_1.8_25
+ XNOR2X1                 (C)       2        26.61           53.22  slow
+ XNOR2XL                 (C)       5        26.61          133.06  slow
+ mac_array               (M)       1   2998629.89      2998629.89  __moduleLib__
+ param_rom               (M)       1     56868.07        56868.07  __moduleLib__
+ post_process            (M)       1    611202.72       611202.72  __moduleLib__
+ sigmoid_lut             (M)       1     47148.26        47148.26  __moduleLib__
+===============================================================================
+
+
+=================================================================
+Design: sigmoid_lut
+Total number of library cell instances:                       984
+Number of library cell instances under current level:         984
+Number of subdesign instances under current level:              0
+
+Combinational library cell area under current level:     45155.75
+Sequential library cell area under current level:         1513.51
+Buffer cell area under current level:                       13.31
+Inverter cell area under current level:                    465.70
+Subdesign instance area:                                     0.00
+Net area:                                               undefined
+
+Total area:                                              47148.26
+
+-------------------------------------------------------------------------------
+ Gate                   Type  Counts         Area        Area Sum  Library
+-------------------------------------------------------------------------------
+ AND2X1                  (C)       1        13.31           13.31  slow
+ AND2XL                  (C)       7        13.31           93.14  slow
+ AND3X1                  (C)       1        16.63           16.63  slow
+ AND3XL                  (C)       1        16.63           16.63  slow
+ AND4X1                  (C)       2        19.96           39.92  slow
+ AOI211X1                (C)      11        16.63          182.95  slow
+ AOI211XL                (C)      68        16.63         1130.98  slow
+ AOI21X1                 (C)       5        13.31           66.53  slow
+ AOI21XL                 (C)      74        13.31          984.61  slow
+ AOI221X1                (C)       4        23.28           93.14  slow
+ AOI221XL                (C)      12        23.28          279.42  slow
+ AOI222X1                (C)       1        26.61           26.61  slow
+ AOI222XL                (C)       2        26.61           53.22  slow
+ AOI22X1                 (C)       1        16.63           16.63  slow
+ AOI22XL                 (C)      20        16.63          332.64  slow
+ AOI2BB1X1               (C)       1        16.63           16.63  slow
+ AOI2BB1XL               (C)      17        16.63          282.74  slow
+ AOI2BB2XL               (C)       3        23.28           69.85  slow
+ AOI31X1                 (C)       3        16.63           49.90  slow
+ AOI31XL                 (C)      34        16.63          565.49  slow
+ AOI32X1                 (C)       2        23.28           46.57  slow
+ AOI32XL                 (C)       7        23.28          162.99  slow
+ AOI33XL                 (C)       2        26.61           53.22  slow
+ BUFX3                   (C)       1        13.31           13.31  slow
+ DFFHQXL                 (S)      21        53.22         1117.67  slow
+ DFFXL                   (S)       7        56.55          395.84  slow
+ INVX1                   (C)      66         6.65          439.08  slow
+ INVXL                   (C)       4         6.65           26.61  slow
+ MXI2XL                  (C)       2        23.28           46.57  slow
+ NAND2BX1                (C)      19        13.31          252.81  slow
+ NAND2BXL                (C)      11        13.31          146.36  slow
+ NAND2X1                 (C)      22         9.98          219.54  slow
+ NAND2XL                 (C)      77         9.98          768.40  slow
+ NAND3BX1                (C)       3        16.63           49.90  slow
+ NAND3BXL                (C)      11        16.63          182.95  slow
+ NAND3X1                 (C)       4        13.31           53.22  slow
+ NAND3XL                 (C)      18        13.31          239.50  slow
+ NAND4BXL                (C)       5        19.96           99.79  slow
+ NAND4XL                 (C)      18        16.63          299.38  slow
+ NOR2BX1                 (C)      13        13.31          172.97  slow
+ NOR2BXL                 (C)      20        13.31          266.11  slow
+ NOR2X1                  (C)      19         9.98          189.60  slow
+ NOR2XL                  (C)      97         9.98          967.98  slow
+ NOR3BX1                 (C)       1        19.96           19.96  slow
+ NOR3BXL                 (C)       3        19.96           59.88  slow
+ NOR3X1                  (C)       6        13.31           79.83  slow
+ NOR3XL                  (C)      33        13.31          439.08  slow
+ NOR4BXL                 (C)      10        19.96          199.58  slow
+ NOR4XL                  (C)       1        19.96           19.96  slow
+ OAI211X1                (C)       1        19.96           19.96  slow
+ OAI211XL                (C)      24        19.96          479.00  slow
+ OAI21XL                 (C)      79        13.31         1051.14  slow
+ OAI221XL                (C)      28        23.28          651.97  slow
+ OAI222XL                (C)       3        26.61           79.83  slow
+ OAI22XL                 (C)      15        19.96          299.38  slow
+ OAI2BB1XL               (C)      10        16.63          166.32  slow
+ OAI2BB2XL               (C)       4        23.28           93.14  slow
+ OAI31XL                 (C)       9        19.96          179.63  slow
+ OAI32X1                 (C)       3        23.28           69.85  slow
+ OAI32XL                 (C)      15        23.28          349.27  slow
+ OAI33X1                 (C)       1        26.61           26.61  slow
+ OAI33XL                 (C)       1        26.61           26.61  slow
+ OR2XL                   (C)       3        13.31           39.92  slow
+ OR3XL                   (C)       1        16.63           16.63  slow
+ OR4X1                   (C)       1        19.96           19.96  slow
+ OR4XL                   (C)       7        19.96          139.71  slow
+ PVDD1CANPW              (C)       1     15960.00        15960.00  SP018W_V1p8_max
+ PVSS1CANPW              (C)       1     15960.00        15960.00  SP018W_V1p8_max
+ XNOR2X1                 (C)       1        26.61           26.61  slow
+ XOR2X1                  (C)       4        26.61          106.44  slow
+ XOR2XL                  (C)       1        26.61           26.61  slow
+===============================================================================
+
+
+=================================================================
+Design: post_process
+Total number of library cell instances:                     32365
+Number of library cell instances under current level:       32365
+Number of subdesign instances under current level:              0
+
+Combinational library cell area under current level:    469947.14
+Sequential library cell area under current level:       127524.20
+Buffer cell area under current level:                       66.53
+Inverter cell area under current level:                  13664.85
+Subdesign instance area:                                     0.00
+Net area:                                               undefined
+
+Total area:                                             611202.72
+
+-------------------------------------------------------------------------------
+ Gate                   Type  Counts         Area        Area Sum  Library
+-------------------------------------------------------------------------------
+ AND2X1                  (C)       9        13.31          119.75  slow
+ AND2X2                  (C)     491        13.31         6533.05  slow
+ AND2XL                  (C)      75        13.31          997.92  slow
+ AND3X1                  (C)      25        16.63          415.80  slow
+ AND3X2                  (C)     165        16.63         2744.28  slow
+ AND3XL                  (C)      21        16.63          349.27  slow
+ AND4X1                  (C)      12        19.96          239.50  slow
+ AND4X2                  (C)     115        19.96         2295.22  slow
+ AND4XL                  (C)       7        19.96          139.71  slow
+ AOI211X1                (C)     744        16.63        12374.21  slow
+ AOI211XL                (C)      32        16.63          532.22  slow
+ AOI21X1                 (C)    2206        13.31        29352.15  slow
+ AOI21XL                 (C)     274        13.31         3645.73  slow
+ AOI221X1                (C)     219        23.28         5099.37  slow
+ AOI221XL                (C)       4        23.28           93.14  slow
+ AOI222X1                (C)      99        26.61         2634.51  slow
+ AOI222XL                (C)       3        26.61           79.83  slow
+ AOI22X1                 (C)     916        16.63        15234.91  slow
+ AOI22XL                 (C)      49        16.63          814.97  slow
+ AOI2BB1X1               (C)     654        16.63        10877.33  slow
+ AOI2BB1XL               (C)     224        16.63         3725.57  slow
+ AOI2BB2X1               (C)      74        23.28         1723.08  slow
+ AOI2BB2XL               (C)       2        23.28           46.57  slow
+ AOI31X1                 (C)     573        16.63         9530.14  slow
+ AOI31XL                 (C)      27        16.63          449.06  slow
+ AOI32X1                 (C)     105        23.28         2444.90  slow
+ AOI32XL                 (C)       5        23.28          116.42  slow
+ AOI33X1                 (C)      16        26.61          425.78  slow
+ BMXX1                   (C)       4        63.20          252.81  slow
+ BUFX3                   (C)       5        13.31           66.53  slow
+ DFFRHQXL                (S)    1512        69.85       105619.85  slow
+ DFFRX1                  (S)      13        76.51          994.59  slow
+ DFFRXL                  (S)     270        76.51        20656.94  slow
+ DFFSXL                  (S)       4        63.20          252.81  slow
+ INVX1                   (C)    1902         6.65        12653.63  slow
+ INVX4                   (C)       1        13.31           13.31  slow
+ INVXL                   (C)     150         6.65          997.92  slow
+ MX2X1                   (C)     107        26.61         2847.40  slow
+ MX2XL                   (C)     123        26.61         3273.18  slow
+ MXI2X1                  (C)    1704        23.28        39677.30  slow
+ MXI2XL                  (C)    1500        23.28        34927.20  slow
+ NAND2BX1                (C)     635        13.31         8449.06  slow
+ NAND2BXL                (C)      48        13.31          638.67  slow
+ NAND2X1                 (C)    2582         9.98        25766.30  slow
+ NAND2X2                 (C)       1        16.63           16.63  slow
+ NAND2XL                 (C)     312         9.98         3113.51  slow
+ NAND3BX1                (C)     173        16.63         2877.34  slow
+ NAND3BXL                (C)      11        16.63          182.95  slow
+ NAND3X1                 (C)     631        13.31         8395.83  slow
+ NAND3XL                 (C)      47        13.31          625.36  slow
+ NAND4BBX1               (C)       1        26.61           26.61  slow
+ NAND4BXL                (C)      76        19.96         1516.84  slow
+ NAND4X1                 (C)     409        16.63         6802.49  slow
+ NAND4XL                 (C)       8        16.63          133.06  slow
+ NOR2BX1                 (C)     482        13.31         6413.30  slow
+ NOR2BXL                 (C)      63        13.31          838.25  slow
+ NOR2X1                  (C)    2423         9.98        24179.60  slow
+ NOR2XL                  (C)     815         9.98         8133.05  slow
+ NOR3BX1                 (C)      26        19.96          518.92  slow
+ NOR3BXL                 (C)       2        19.96           39.92  slow
+ NOR3X1                  (C)     647        13.31         8608.72  slow
+ NOR3XL                  (C)      65        13.31          864.86  slow
+ NOR4BX1                 (C)     100        19.96         1995.84  slow
+ NOR4BXL                 (C)       3        19.96           59.88  slow
+ NOR4X1                  (C)     146        19.96         2913.93  slow
+ NOR4XL                  (C)       3        19.96           59.88  slow
+ OAI211X1                (C)     403        19.96         8043.24  slow
+ OAI211XL                (C)      15        19.96          299.38  slow
+ OAI21XL                 (C)    2407        13.31        32026.58  slow
+ OAI221XL                (C)     234        23.28         5448.64  slow
+ OAI222XL                (C)     142        26.61         3778.79  slow
+ OAI22X1                 (C)     328        19.96         6546.36  slow
+ OAI22XL                 (C)      24        19.96          479.00  slow
+ OAI2BB1X1               (C)     719        16.63        11958.41  slow
+ OAI2BB1XL               (C)     135        16.63         2245.32  slow
+ OAI2BB2X1               (C)      90        23.28         2095.63  slow
+ OAI2BB2XL               (C)      11        23.28          256.13  slow
+ OAI31X1                 (C)     232        19.96         4630.35  slow
+ OAI31XL                 (C)      13        19.96          259.46  slow
+ OAI32X1                 (C)     124        23.28         2887.32  slow
+ OAI32XL                 (C)       4        23.28           93.14  slow
+ OAI33X1                 (C)      19        26.61          505.61  slow
+ OR2X1                   (C)      32        13.31          425.78  slow
+ OR2X2                   (C)     409        13.31         5441.99  slow
+ OR2XL                   (C)      55        13.31          731.81  slow
+ OR3XL                   (C)     168        16.63         2794.18  slow
+ OR4X1                   (C)      11        19.96          219.54  slow
+ OR4X2                   (C)     129        19.96         2574.63  slow
+ OR4XL                   (C)       4        19.96           79.83  slow
+ XNOR2X1                 (C)    1412        26.61        37575.01  slow
+ XNOR2XL                 (C)      52        26.61         1383.78  slow
+ XNOR3X2                 (C)      39        59.88         2335.13  slow
+ XOR2X1                  (C)     949        26.61        25254.03  slow
+ XOR2XL                  (C)      27        26.61          718.50  slow
+ XOR3X2                  (C)      28        59.88         1676.51  slow
+===============================================================================
+
+
+=================================================================
+Design: mac_array
+Total number of library cell instances:                    178697
+Number of library cell instances under current level:      178697
+Number of subdesign instances under current level:              0
+
+Combinational library cell area under current level:   2539676.50
+Sequential library cell area under current level:       393975.49
+Buffer cell area under current level:                        0.00
+Inverter cell area under current level:                  64977.90
+Subdesign instance area:                                     0.00
+Net area:                                               undefined
+
+Total area:                                            2998629.89
+
+-------------------------------------------------------------------------------
+ Gate                   Type  Counts         Area        Area Sum  Library
+-------------------------------------------------------------------------------
+ AND2X1                  (C)     103        13.31         1370.48  slow
+ AND2X2                  (C)    3864        13.31        51412.84  slow
+ AND2XL                  (C)    2854        13.31        37974.18  slow
+ AND3X1                  (C)      32        16.63          532.22  slow
+ AND3X2                  (C)    1200        16.63        19958.40  slow
+ AND3XL                  (C)     377        16.63         6270.26  slow
+ AND4X1                  (C)       6        19.96          119.75  slow
+ AND4X2                  (C)    1067        19.96        21295.61  slow
+ AND4XL                  (C)     194        19.96         3871.93  slow
+ AOI211X1                (C)    1370        16.63        22785.84  slow
+ AOI211XL                (C)     383        16.63         6370.06  slow
+ AOI21X1                 (C)   10733        13.31       142809.01  slow
+ AOI21XL                 (C)    4388        13.31        58384.97  slow
+ AOI221X1                (C)     103        23.28         2398.33  slow
+ AOI221XL                (C)      26        23.28          605.40  slow
+ AOI222X1                (C)      56        26.61         1490.23  slow
+ AOI222XL                (C)       4        26.61          106.44  slow
+ AOI22X1                 (C)    5887        16.63        97912.58  slow
+ AOI22XL                 (C)     778        16.63        12939.70  slow
+ AOI2BB1X1               (C)    2871        16.63        47750.47  slow
+ AOI2BB1XL               (C)    2231        16.63        37105.99  slow
+ AOI2BB2X1               (C)     149        23.28         3469.44  slow
+ AOI2BB2XL               (C)      37        23.28          861.54  slow
+ AOI31X1                 (C)     968        16.63        16099.78  slow
+ AOI31XL                 (C)     156        16.63         2594.59  slow
+ AOI32X1                 (C)     177        23.28         4121.41  slow
+ AOI32XL                 (C)      27        23.28          628.69  slow
+ AOI33X1                 (C)      16        26.61          425.78  slow
+ AOI33XL                 (C)       3        26.61           79.83  slow
+ DFFRHQXL                (S)    5342        69.85       373162.21  slow
+ DFFRX1                  (S)       7        76.51          535.55  slow
+ DFFRXL                  (S)     175        76.51        13388.76  slow
+ DFFSX1                  (S)      14        63.20          884.82  slow
+ DFFSXL                  (S)      95        63.20         6004.15  slow
+ INVX1                   (C)    7412         6.65        49310.55  slow
+ INVXL                   (C)    2355         6.65        15667.34  slow
+ MX2X1                   (C)      29        26.61          771.72  slow
+ MX2XL                   (C)      48        26.61         1277.34  slow
+ MXI2X1                  (C)     124        23.28         2887.32  slow
+ MXI2XL                  (C)     238        23.28         5541.78  slow
+ NAND2BX1                (C)    7565        13.31       100656.87  slow
+ NAND2BX2                (C)       1        19.96           19.96  slow
+ NAND2BXL                (C)    2267        13.31        30163.80  slow
+ NAND2X1                 (C)   18087         9.98       180493.80  slow
+ NAND2XL                 (C)    4818         9.98        48079.79  slow
+ NAND3BX1                (C)     510        16.63         8482.32  slow
+ NAND3BXL                (C)     154        16.63         2561.33  slow
+ NAND3X1                 (C)    2922        13.31        38878.96  slow
+ NAND3XL                 (C)     612        13.31         8143.03  slow
+ NAND4BBX1               (C)       4        26.61          106.44  slow
+ NAND4BXL                (C)     192        19.96         3832.01  slow
+ NAND4X1                 (C)    2353        16.63        39135.10  slow
+ NAND4XL                 (C)     179        16.63         2977.13  slow
+ NOR2BX1                 (C)    6483        13.31        86260.21  slow
+ NOR2BXL                 (C)    2293        13.31        30509.74  slow
+ NOR2X1                  (C)   10726         9.98       107036.90  slow
+ NOR2XL                  (C)    7590         9.98        75742.13  slow
+ NOR3BX1                 (C)     125        19.96         2494.80  slow
+ NOR3BXL                 (C)      98        19.96         1955.92  slow
+ NOR3X1                  (C)    1503        13.31        19998.32  slow
+ NOR3XL                  (C)     836        13.31        11123.48  slow
+ NOR4BBX1                (C)       2        26.61           53.22  slow
+ NOR4BBXL                (C)       2        26.61           53.22  slow
+ NOR4BX1                 (C)      41        19.96          818.29  slow
+ NOR4BXL                 (C)      33        19.96          658.63  slow
+ NOR4X1                  (C)      42        19.96          838.25  slow
+ NOR4XL                  (C)      65        19.96         1297.30  slow
+ OAI211X1                (C)     451        19.96         9001.24  slow
+ OAI211XL                (C)     220        19.96         4390.85  slow
+ OAI21XL                 (C)   14404        13.31       191653.86  slow
+ OAI221XL                (C)     174        23.28         4051.56  slow
+ OAI222XL                (C)      22        26.61          585.45  slow
+ OAI22X1                 (C)     693        19.96        13831.17  slow
+ OAI22XL                 (C)     605        19.96        12074.83  slow
+ OAI2BB1X1               (C)    2876        16.63        47833.63  slow
+ OAI2BB1XL               (C)     833        16.63        13854.46  slow
+ OAI2BB2X1               (C)     252        23.28         5867.77  slow
+ OAI2BB2XL               (C)      38        23.28          884.82  slow
+ OAI31X1                 (C)     399        19.96         7963.40  slow
+ OAI31XL                 (C)      65        19.96         1297.30  slow
+ OAI32X1                 (C)     328        23.28         7637.41  slow
+ OAI32XL                 (C)      51        23.28         1187.52  slow
+ OAI33X1                 (C)      24        26.61          638.67  slow
+ OAI33XL                 (C)       4        26.61          106.44  slow
+ OR2X1                   (C)      79        13.31         1051.14  slow
+ OR2X2                   (C)    2627        13.31        34953.81  slow
+ OR2XL                   (C)    1958        13.31        26052.37  slow
+ OR3XL                   (C)    1248        16.63        20756.74  slow
+ OR4X1                   (C)       1        19.96           19.96  slow
+ OR4X2                   (C)      50        19.96          997.92  slow
+ OR4XL                   (C)     269        19.96         5368.81  slow
+ XNOR2X1                 (C)   10485        26.61       279018.44  slow
+ XNOR2XL                 (C)    3846        26.61       102346.68  slow
+ XNOR3X2                 (C)     584        59.88        34967.12  slow
+ XOR2X1                  (C)    8012        26.61       213208.94  slow
+ XOR2XL                  (C)    2345        26.61        62403.26  slow
+ XOR3X2                  (C)     352        59.88        21076.07  slow
+===============================================================================
+
+
+=================================================================
+Design: param_rom
+Total number of library cell instances:                      3558
+Number of library cell instances under current level:        3558
+Number of subdesign instances under current level:              0
+
+Combinational library cell area under current level:     55211.52
+Sequential library cell area under current level:            0.00
+Buffer cell area under current level:                       26.61
+Inverter cell area under current level:                   1629.94
+Subdesign instance area:                                     0.00
+Net area:                                               undefined
+
+Total area:                                              56868.07
+
+-------------------------------------------------------------------------------
+ Gate                   Type  Counts         Area        Area Sum  Library
+-------------------------------------------------------------------------------
+ AND2X2                  (C)      10        13.31          133.06  slow
+ AND2XL                  (C)      56        13.31          745.11  slow
+ AND3X1                  (C)       2        16.63           33.26  slow
+ AND3XL                  (C)       8        16.63          133.06  slow
+ AND4XL                  (C)       2        19.96           39.92  slow
+ AOI211X1                (C)      24        16.63          399.17  slow
+ AOI211XL                (C)       4        16.63           66.53  slow
+ AOI21X1                 (C)     115        13.31         1530.14  slow
+ AOI21XL                 (C)      19        13.31          252.81  slow
+ AOI221X1                (C)       4        23.28           93.14  slow
+ AOI221XL                (C)       1        23.28           23.28  slow
+ AOI222X1                (C)       1        26.61           26.61  slow
+ AOI222XL                (C)       2        26.61           53.22  slow
+ AOI22X1                 (C)       7        16.63          116.42  slow
+ AOI22XL                 (C)       4        16.63           66.53  slow
+ AOI2BB1X1               (C)      11        16.63          182.95  slow
+ AOI2BB1XL               (C)       1        16.63           16.63  slow
+ AOI2BB2XL               (C)       1        23.28           23.28  slow
+ AOI31X1                 (C)      24        16.63          399.17  slow
+ AOI32X1                 (C)       4        23.28           93.14  slow
+ BUFX3                   (C)       2        13.31           26.61  slow
+ INVX1                   (C)     237         6.65         1576.71  slow
+ INVX4                   (C)       1        13.31           13.31  slow
+ INVXL                   (C)       6         6.65           39.92  slow
+ NAND2BX1                (C)      67        13.31          891.48  slow
+ NAND2BX2                (C)       1        19.96           19.96  slow
+ NAND2BXL                (C)      30        13.31          399.17  slow
+ NAND2X1                 (C)    1256         9.98        12533.88  slow
+ NAND2XL                 (C)     265         9.98         2644.49  slow
+ NAND3BX1                (C)       9        16.63          149.69  slow
+ NAND3BXL                (C)       5        16.63           83.16  slow
+ NAND3X1                 (C)     329        13.31         4377.54  slow
+ NAND3XL                 (C)      71        13.31          944.70  slow
+ NAND4BXL                (C)       3        19.96           59.88  slow
+ NAND4X1                 (C)      19        16.63          316.01  slow
+ NAND4XL                 (C)       5        16.63           83.16  slow
+ NOR2BX1                 (C)      19        13.31          252.81  slow
+ NOR2BXL                 (C)       2        13.31           26.61  slow
+ NOR2X1                  (C)     210         9.98         2095.63  slow
+ NOR2XL                  (C)     131         9.98         1307.28  slow
+ NOR3BX1                 (C)       5        19.96           99.79  slow
+ NOR3BXL                 (C)       2        19.96           39.92  slow
+ NOR3X1                  (C)      51        13.31          678.59  slow
+ NOR3XL                  (C)      19        13.31          252.81  slow
+ NOR4BX1                 (C)       4        19.96           79.83  slow
+ NOR4X1                  (C)       1        19.96           19.96  slow
+ OAI211X1                (C)      40        19.96          798.34  slow
+ OAI211XL                (C)       6        19.96          119.75  slow
+ OAI21XL                 (C)     368        13.31         4896.46  slow
+ OAI22X1                 (C)       3        19.96           59.88  slow
+ OAI22XL                 (C)       8        19.96          159.67  slow
+ OAI2BB1X1               (C)      13        16.63          216.22  slow
+ OAI2BB1XL               (C)       5        16.63           83.16  slow
+ OAI2BB2X1               (C)       1        23.28           23.28  slow
+ OAI31X1                 (C)      20        19.96          399.17  slow
+ OAI31XL                 (C)       3        19.96           59.88  slow
+ OAI32X1                 (C)       3        23.28           69.85  slow
+ OAI32XL                 (C)       1        23.28           23.28  slow
+ OR2X2                   (C)       8        13.31          106.44  slow
+ OR2XL                   (C)      17        13.31          226.20  slow
+ OR3XL                   (C)       6        16.63           99.79  slow
+ OR4XL                   (C)       1        19.96           19.96  slow
+ PVSS1CANPW              (C)       1     15960.00        15960.00  SP018W_V1p8_max
+ XNOR2X1                 (C)       1        26.61           26.61  slow
+ XNOR2XL                 (C)       1        26.61           26.61  slow
+ XOR2X1                  (C)       2        26.61           53.22  slow
+===============================================================================

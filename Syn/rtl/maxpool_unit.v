@@ -6,8 +6,8 @@ module maxpool_unit (
     input  wire                 pool_start,  
     input  wire [255:0]         sram_rdata,  
     
-    output reg  [9:0]           sram_raddr,
-    output reg  [9:0]           sram_waddr,
+    output reg  [6:0]           sram_raddr,
+    output reg  [6:0]           sram_waddr,
     output wire [255:0]         sram_wdata,
     output reg                  sram_wen,    
     output reg                  pool_done
@@ -55,7 +55,7 @@ module maxpool_unit (
                     if (addr_cnt == 35) begin
                         req_valid <= 0; // 36个点发完，停止请求
                     end
-                    addr_cnt <= addr_cnt + 1;
+                    addr_cnt <= addr_cnt + 1'b1;
                 end
                 
                 // 2. 接收数据并处理写回 (T+2)
@@ -67,9 +67,9 @@ module maxpool_unit (
                             pool_done  <= 1;  // 发送完成脉冲
                             is_working <= 0;  // 功德圆满，下班
                         end
-                        out_cnt <= out_cnt + 1;
+                        out_cnt <= out_cnt + 1'b1;
                     end
-                    process_cnt <= process_cnt + 1;
+                    process_cnt <= process_cnt + 1'b1;
                 end
             end
         end

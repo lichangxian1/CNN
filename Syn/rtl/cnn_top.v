@@ -197,12 +197,15 @@ module cnn_top (
     mac_array u_mac_array (.clk(clk), .rst_n(rst_n), .layer_mode(layer_mode),
         .act_in_flat(act_in_flat), .wgt_in_flat(wgt_in_flat), .psum_out_flat(psum_out_flat));
 
-// 🚨 删去写死的 quant_M0 和 quant_n，传入动态对齐的 layer_mode_pipe[1]
+
+    // 增加一根 wire 提取数组元素
+    wire [1:0] cur_layer_mode = layer_mode_pipe[1];
+
     post_process u_post_process (
         .clk(clk), 
         .rst_n(rst_n), 
         .mac_valid(mac_valid_sync), 
-        .layer_mode(layer_mode_pipe[1]), // 🌟 传入与数据绝对对齐的层模式 (T+2)
+        .layer_mode(cur_layer_mode), // 🌟 传入一维的 wire
         .psum_in_flat(psum_out_flat), 
         .bias_in_flat(bias_in_flat), 
         .out_valid(out_valid), 
@@ -248,4 +251,6 @@ module cnn_top (
     end
     assign fc_valid = fc_valid_reg;
 
+    // 防止激进综合器剔除未使用的端口
+    wire dummy_prevent_opt = ^ext_act_in | ext_act_valid;
 endmodule

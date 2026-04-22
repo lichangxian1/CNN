@@ -5,11 +5,10 @@
 # 1. 设置搜索路径
 set search_path "$search_path ../rtl ../scripts ../../../../SMIC18/lib ../../../../SMIC18/mem ../work"
 
-# 2. 指定目标工艺库和链接优先级 (✅ 已替换为真实的 SRAM .lib 文件名)
+# 2. 指定目标工艺库和链接优先级
 set target_lib "slow.lib S018V3EBCDSP_X20Y4D128_PR_tt_1.8_25.lib SP018W_V1p8_max.lib"
-set link_priority "slow S018V3EBCDSP_X20Y4D128_PR_tt_1.8_25 SP018W_V1p8_max"
-
-# 3. 读取设计文件 (✅ 已彻底删去不可综合的 SRAM .v 仿真模型)
+set link_priority "* slow S018V3EBCDSP_X20Y4D128_PR_tt_1.8_25 SP018W_V1p8_max"
+# 3. 读取设计文件
 read_design -format verilog {
     ../rtl/sram_256x80.v
     ../rtl/SigLUT.v

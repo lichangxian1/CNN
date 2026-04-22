@@ -15,7 +15,7 @@
        /* this program, without the prior consent of  Empyrean  is     */
        /* strictly prohibited.                                         */
        /*                                                              */
-       /*             Invocation Time:  6:44 PM, 20-Apr-26             */
+       /*             Invocation Time:  9:28 AM, 22-Apr-26             */
        /*                                                              */
        /****************************************************************/
 INFO:    Processing command script file '../scripts/zs_cnn.tcl'...
@@ -40,7 +40,7 @@ INFO:    The merge of multiple libraries 'slow.lib
          S018V3EBCDSP_X20Y4D128_PR_tt_1.8_25.lib SP018W_V1p8_max.lib' is set
          to target_lib!
 0
-CMD:     set link_priority "slow S018V3EBCDSP_X20Y4D128_PR_tt_1.8_25
+CMD:     set link_priority "* slow S018V3EBCDSP_X20Y4D128_PR_tt_1.8_25
          SP018W_V1p8_max"
 INFO:    link_priority is changed! (CMD_INFO_007)
 0
@@ -116,29 +116,54 @@ INFO:    Analyze Module 'post_process'
 INFO:    Analyze Module 'output_staging_buffer'
          (/cluster/home/jiut107/cnn2/CNN/Syn/rtl/output_staging_buffer.v:12)
          (PSR_19360)
+WARNING: The 10-bit expression has been truncated to match the 7-bit target
+         size
+         (/cluster/home/jiut107/cnn2/CNN/Syn/rtl/output_staging_buffer.v:66)
+         (PSR_11697)
+WARNING: The 8-bit expression has been truncated to match the 7-bit target
+         size
+         (/cluster/home/jiut107/cnn2/CNN/Syn/rtl/output_staging_buffer.v:80)
+         (PSR_11697)
+WARNING: actual bit length 10 differs from formal bit length 7 for port
+         'staging_waddr'
+         (/cluster/home/jiut107/cnn2/CNN/Syn/rtl/cnn_top.v:218) (PSR_11544)
 INFO:    Analyze Module 'maxpool_unit'
          (/cluster/home/jiut107/cnn2/CNN/Syn/rtl/maxpool_unit.v:3) (PSR_19360)
+WARNING: actual bit length 10 differs from formal bit length 7 for port
+         'sram_raddr' (/cluster/home/jiut107/cnn2/CNN/Syn/rtl/cnn_top.v:225)
+         (PSR_11544)
+WARNING: actual bit length 10 differs from formal bit length 7 for port
+         'sram_waddr' (/cluster/home/jiut107/cnn2/CNN/Syn/rtl/cnn_top.v:226)
+         (PSR_11544)
 INFO:    Analyze Module 'sigmoid_lut'
          (/cluster/home/jiut107/cnn2/CNN/Syn/rtl/SigLUT.v:3) (PSR_19360)
-INFO:    Break the bus net 'weight_1[19711:0]' on module 'param_rom'
+INFO:    Break the bus net 'weight_fc[4607:0]' on module 'param_rom'
 INFO:    Break the bus net 'cur_M0[15:0]' on module 'post_process'
 INFO:    Break the bus net 'cur_n[3:0]' on module 'post_process'
-INFO:    Break the bus net 'buffer[255:0]' on module 'output_staging_buffer'
 INFO:    Break the bus net 'lut_val[31:0]' on module 'sigmoid_lut'
+INFO:    Break the bus net 'pool_raddr[9:0]' on module 'cnn_top'
+INFO:    Break the bus net 'pool_waddr[9:0]' on module 'cnn_top'
 INFO:    Break the bus net 'mac_valid_pipe[1:0]' on module 'cnn_top'
+INFO:    Break the bus net 'staging_waddr[9:0]' on module 'cnn_top'
 INFO:    Break the bus net 'act_raddr_delay[9:0]' on module 'cnn_top'
 INFO:    Break the bus net 'conv1_act_in[255:0]' on module 'cnn_top'
-WARNING: Reference of instance 'inst_CNN_top' in design 'cnn_chip' to
-         'cnn_top' cannot be resolved. (NTL_WARN_007)
+WARNING: Reference of instance 'u_staging_buffer' in design 'cnn_top' to
+         'output_staging_buffer' cannot be resolved. (NTL_WARN_007)
+WARNING: Reference of instance 'u_maxpool' in design 'cnn_top' to
+         'maxpool_unit' cannot be resolved. (NTL_WARN_007)
 0
 CMD:     make_unique
+         Instance 'u_sram_ping' in design 'cnn_top' is made unique. The newly
+         created design is 'sram_256x80_1'.
+         Instance 'u_sram_pong' in design 'cnn_top' is made unique. The newly
+         created design is 'sram_256x80_2'.
 0
 CMD:     source ../scripts/cnn.sdc
 INFO:    Sourcing file /cluster/home/jiut107/cnn2/CNN/Syn/scripts/cnn.sdc.
          (CMD_INFO_004)
 CMD:     get_ports clk
 0
-CMD:     create_clock -name clk -period 10.0 [get_ports clk]
+CMD:     create_clock -name clk -period 50.0 [get_ports clk]
 0
 CMD:     all_inputs
 0
@@ -149,6 +174,10 @@ CMD:     all_outputs
 CMD:     set_output_delay -max 2.0 -clock clk [all_outputs]
 0
 CMD:     get_clocks clk
+WARNING: Reference of instance 'u_staging_buffer' in design 'cnn_top' to
+         'output_staging_buffer' cannot be resolved. (NTL_WARN_007)
+WARNING: Reference of instance 'u_maxpool' in design 'cnn_top' to
+         'maxpool_unit' cannot be resolved. (NTL_WARN_007)
 0
 CMD:     set_clock_uncertainty 0.5 [get_clocks clk]
 0
@@ -159,7 +188,7 @@ CMD:     optimize
 * Command : optimize                                                          *
 * Design  : cnn_chip                                                          *
 * Version : main_1229_2e0365ed.rel                                            *
-* Date    : 6:44 PM, 20-Apr-26                                                *
+* Date    : 9:28 AM, 22-Apr-26                                                *
 *******************************************************************************
 *******************************************************************************
 * Timing check / optimization:                                                *
@@ -178,61 +207,562 @@ CMD:     optimize
 *  (use 'set_drc_option -data_path | -clock_path | -async_path' cmd           *
 *   to control fixing)                                                        *
 *******************************************************************************
-WARNING: Reference of instance 'inst_CNN_top' in design 'cnn_chip' to
-         'cnn_top' cannot be resolved. (NTL_WARN_007)
+WARNING: Reference of instance 'u_staging_buffer' in design 'cnn_top' to
+         'output_staging_buffer' cannot be resolved. (NTL_WARN_007)
+WARNING: Reference of instance 'u_maxpool' in design 'cnn_top' to
+         'maxpool_unit' cannot be resolved. (NTL_WARN_007)
+WARNING: Output port 'wgt_in_flat[2463]' in design 'param_rom' is directly
+         connected to output port 'wgt_in_flat[2462]'. (CHKDSG_001)
+WARNING: Output port 'wgt_in_flat[2462]' in design 'param_rom' is directly
+         connected to output port 'wgt_in_flat[2463]'. (CHKDSG_001)
+WARNING: Output port 'wgt_in_flat[2460]' in design 'param_rom' is directly
+         connected to output port 'wgt_in_flat[2369]'. (CHKDSG_001)
+WARNING: Output port 'wgt_in_flat[2456]' in design 'param_rom' is directly
+         connected to output port 'wgt_in_flat[2306]'. (CHKDSG_001)
+WARNING: Output port 'wgt_in_flat[2450]' in design 'param_rom' is directly
+         connected to output port 'wgt_in_flat[2323]'. (CHKDSG_001)
+WARNING: Output port 'wgt_in_flat[2433]' in design 'param_rom' is directly
+         connected to output port 'wgt_in_flat[2315]'. (CHKDSG_001)
+WARNING: Output port 'wgt_in_flat[2423]' in design 'param_rom' is directly
+         connected to output port 'wgt_in_flat[2422]'. (CHKDSG_001)
+WARNING: Output port 'wgt_in_flat[2422]' in design 'param_rom' is directly
+         connected to output port 'wgt_in_flat[2423]'. (CHKDSG_001)
+WARNING: Output port 'wgt_in_flat[2401]' in design 'param_rom' is directly
+         connected to output port 'wgt_in_flat[2319]'. (CHKDSG_001)
+WARNING: Output port 'wgt_in_flat[2399]' in design 'param_rom' is directly
+         connected to output port 'wgt_in_flat[2398]'. (CHKDSG_001)
+WARNING: 481 more port(s) in design 'param_rom' are directly connected to
+         other ports. (CHKDSG_003)
 
 Beginning Hierarchical Optimization
 ===================================
 
+INFO:    Port 'ext_act_valid' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[0]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[1]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[2]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[3]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[4]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[5]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[6]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[7]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[8]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[9]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[10]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[11]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[12]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[13]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[14]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[15]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[16]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[17]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[18]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[19]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[20]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[21]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[22]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[23]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[24]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[25]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[26]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[27]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[28]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[29]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[30]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[31]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[32]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[33]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[34]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[35]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[36]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[37]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[38]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[39]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[40]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[41]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[42]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[43]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[44]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[45]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[46]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[47]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[48]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[49]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[50]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[51]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[52]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[53]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[54]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[55]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[56]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[57]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[58]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[59]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[60]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[61]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[62]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[63]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[64]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[65]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[66]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[67]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[68]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[69]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[70]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[71]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[72]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[73]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[74]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[75]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[76]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[77]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[78]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[79]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[80]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[81]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[82]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[83]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[84]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[85]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[86]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[87]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[88]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[89]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[90]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[91]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[92]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[93]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[94]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[95]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[96]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[97]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[98]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[99]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[100]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[101]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[102]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[103]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[104]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[105]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[106]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[107]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[108]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[109]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[110]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[111]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[112]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[113]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[114]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[115]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[116]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[117]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[118]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[119]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[120]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[121]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[122]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[123]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[124]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[125]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[126]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[127]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[128]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[129]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[130]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[131]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[132]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[133]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[134]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[135]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[136]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[137]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[138]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[139]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[140]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[141]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[142]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[143]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[144]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[145]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[146]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[147]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[148]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[149]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[150]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[151]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[152]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[153]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[154]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[155]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[156]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[157]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[158]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[159]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[160]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[161]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[162]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[163]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[164]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[165]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[166]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[167]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[168]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[169]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[170]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[171]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[172]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[173]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[174]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[175]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[176]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[177]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[178]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[179]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[180]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[181]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[182]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[183]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[184]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[185]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[186]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[187]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[188]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[189]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[190]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[191]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[192]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[193]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[194]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[195]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[196]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[197]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[198]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[199]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[200]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[201]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[202]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[203]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[204]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[205]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[206]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[207]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[208]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[209]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[210]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[211]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[212]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[213]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[214]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[215]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[216]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[217]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[218]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[219]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[220]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[221]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[222]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[223]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[224]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[225]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[226]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[227]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[228]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[229]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[230]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[231]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[232]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[233]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[234]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[235]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[236]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[237]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[238]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[239]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[240]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[241]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[242]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[243]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[244]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[245]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[246]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[247]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[248]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[249]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[250]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[251]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[252]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[253]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[254]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'ext_act_in[255]' in design 'cnn_top' is detected floating
+         without fanouts. (OPT_I_007)
+INFO:    Port 'A[9]' in design 'sram_256x80_1' is detected floating without
+         fanouts. (OPT_I_007)
+INFO:    Port 'A[8]' in design 'sram_256x80_1' is detected floating without
+         fanouts. (OPT_I_007)
+INFO:    Port 'A[7]' in design 'sram_256x80_1' is detected floating without
+         fanouts. (OPT_I_007)
+INFO:    Port 'A[9]' in design 'sram_256x80_2' is detected floating without
+         fanouts. (OPT_I_007)
+INFO:    Port 'A[8]' in design 'sram_256x80_2' is detected floating without
+         fanouts. (OPT_I_007)
+INFO:    Port 'A[7]' in design 'sram_256x80_2' is detected floating without
+         fanouts. (OPT_I_007)
 
-  Optimizing Design cnn_chip (1 1)
+  Optimizing Design line_buffer (1 7)
 
-
-
-Beginning Incremental Optimization (High Mapping Effort)
-==================================
-
-
-                                   LEAKAGE     WORST MAX   WORST MIN  END
- CPU TIME           AREA            POWER        SLACK       SLACK    POINT
----------------------------------------------------------------------
-----------
- 00h00m52s       4692240.00                     0.0000             
-inst_CNN_top/clk  
- 00h00m52s       4692240.00                     0.0000             
-inst_CNN_top/clk  
- 00h00m52s       4692240.00                     0.0000             
-inst_CNN_top/clk  
- 00h00m52s       4692240.00                     0.0000             
-inst_CNN_top/clk  
- 00h00m52s       4692240.00                     0.0000             
-inst_CNN_top/clk  
- 00h00m52s       4692240.00                     0.0000             
-inst_CNN_top/clk  
- 00h00m52s       4692240.00                     0.0000             
-inst_CNN_top/clk  
-
-Optimization Completed
-======================
-
-0
-CMD:     analyze_constraint -all_violators > ../reports/violators_cnn.rpt
-0
-CMD:     analyze_area > ../reports/area_cnn.rpt
-0
-CMD:     analyze_timing > ../reports/timing_cnn.rpt
-0
-CMD:     write_design -format verilog -hierarchy -o ../outputs/cnn_chip_syn.v
-0
-CMD:     write_sdc ../outputs/cnn_chip_syn.sdc
-0
-
-Warning/Error message (message ID)                                     Number
------------------------------------------------------------------------------
-WARNING:                                            (NTL_WARN_007)          2
-Reference of instance '' in design '' to '' cannot be resolved.
------------------------------------------------------------------------------
-Errors: 0, Warnings: 2
-
-CPU time: 58.98 sec
-Quit zs_shell.  Thank you!

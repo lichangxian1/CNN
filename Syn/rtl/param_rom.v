@@ -53,48 +53,41 @@ module param_rom (
 
 
     // ======================================================================
-    // 2. 动态张量重排 (利用位宽切片，自动从巨型 Wire 中抠出当前周期需要的数据)
+    // 2. 动态张量重排 (数学降维打击版：整块切片，拯救综合器)
     // ======================================================================
-    integer k, p, ch, in_ch;
-    
     always @(*) begin
-        wgt_in_flat  = 2464'd0;
-        bias_in_flat = 512'd0;
+        // 默认全赋零，防止产生锁存器 (Latch)
+        // wgt_in_flat  = 2464'd0;
+        // bias_in_flat = 512'd0;
+        wgt_in_flat  = {2464{1'b0}};
+        bias_in_flat = {512{1'b0}};
         
         case (layer_mode)
             2'd0: begin // 【Conv1 模式】
-                for (k = 0; k < 4; k = k + 1) begin
-                    bias_in_flat[k*16 +: 16] = bias_1[(ch_grp_cnt * 4 + k)*16 +: 16];
-                    for (p = 0; p < 77; p = p + 1) begin
-                        wgt_in_flat[(k*77 + p)*8 +: 8] = weight_1[((ch_grp_cnt * 4 + k)*77 + p)*8 +: 8];
-                    end
-                end
+                // 4组 * 16bit = 64bit
+                bias_in_flat[63:0]   = bias_1[ch_grp_cnt * 64 +: 64];
+                // 4组 * 77点 * 8bit = 2464bit，整块直接截取！
+                wgt_in_flat[2463:0]  = weight_1[ch_grp_cnt * 2464 +: 2464];
             end
             
             2'd1: begin // 【DWConv 模式】
-                for (ch = 0; ch < 32; ch = ch + 1) begin
-                    bias_in_flat[ch*16 +: 16] = bias_2[ch*16 +: 16];
-                    for (p = 0; p < 9; p = p + 1) begin
-                        wgt_in_flat[(ch*9 + p)*8 +: 8] = weight_2[(ch*9 + p)*8 +: 8];
-                    end
-                end
+                // 32通道全上，直接整体赋值
+                bias_in_flat[511:0]  = bias_2;
+                wgt_in_flat[2303:0]  = weight_2;
             end
             
             2'd2: begin // 【PWConv 模式】
-                for (k = 0; k < 8; k = k + 1) begin
-                    bias_in_flat[k*16 +: 16] = bias_3[(ch_grp_cnt * 8 + k)*16 +: 16];
-                    for (in_ch = 0; in_ch < 32; in_ch = in_ch + 1) begin
-                        wgt_in_flat[(k*32 + in_ch)*8 +: 8] = weight_3[((ch_grp_cnt * 8 + k)*32 + in_ch)*8 +: 8];
-                    end
-                end
+                // 8组 * 16bit = 128bit
+                bias_in_flat[127:0]  = bias_3[ch_grp_cnt * 128 +: 128];
+                // 8组 * 32通道 * 8bit = 2048bit
+                wgt_in_flat[2047:0]  = weight_3[ch_grp_cnt * 2048 +: 2048];
             end
 
             2'd3: begin // 【FC 模式】
-                // ch_grp_cnt 只有 0 或 1，代表当前计算哪个神经元
-                bias_in_flat[15:0] = bias_fc[ch_grp_cnt * 16 +: 16];
-                for (p = 0; p < 288; p = p + 1) begin
-                    wgt_in_flat[p*8 +: 8] = weight_fc[(ch_grp_cnt * 288 + p)*8 +: 8];
-                end
+                // 1个神经元 * 16bit
+                bias_in_flat[15:0]   = bias_fc[ch_grp_cnt * 16 +: 16];
+                // 1个神经元 * 288点 * 8bit = 2304bit
+                wgt_in_flat[2303:0]  = weight_fc[ch_grp_cnt * 2304 +: 2304];
             end
             
             default: ;

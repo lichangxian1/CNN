@@ -1,5 +1,5 @@
 # 定义时钟：100MHz (周期 10ns)
-create_clock -name clk -period 10.0 [get_ports clk]
+create_clock -name clk -period 50.0 [get_ports clk]
 
 # 设置输入/输出延迟 (示例)
 set_input_delay -max 2.0 -clock clk [all_inputs]
