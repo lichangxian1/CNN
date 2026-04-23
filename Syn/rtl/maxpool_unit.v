@@ -6,8 +6,8 @@ module maxpool_unit (
     input  wire                 pool_start,  
     input  wire [255:0]         sram_rdata,  
     
-    output reg  [6:0]           sram_raddr,
-    output reg  [6:0]           sram_waddr,
+    output reg  [9:0]           sram_raddr,
+    output reg  [9:0]           sram_waddr,
     output wire [255:0]         sram_wdata,
     output reg                  sram_wen,    
     output reg                  pool_done

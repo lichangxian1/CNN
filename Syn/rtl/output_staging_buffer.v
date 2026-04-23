@@ -23,7 +23,7 @@ module output_staging_buffer (
     
     // 发送给 SRAM MUX 的终极写操作信号
     output reg              staging_wen,     // 低电平有效
-    output reg  [6:0]       staging_waddr,
+    output reg  [9:0]       staging_waddr,
     output reg  [255:0]     staging_wdata
 );
 

@@ -629,8 +629,8 @@ module maxpool_unit (
     input  wire                 pool_start,  
     input  wire [255:0]         sram_rdata,  
     
-    output reg  [9:0]           sram_raddr,
-    output reg  [9:0]           sram_waddr,
+    output reg  [6:0]           sram_raddr,
+    output reg  [6:0]           sram_waddr,
     output wire [255:0]         sram_wdata,
     output reg                  sram_wen,    
     output reg                  pool_done
@@ -749,7 +749,7 @@ module output_staging_buffer (
     
     // 发送给 SRAM MUX 的终极写操作信号
     output reg              staging_wen,     // 低电平有效
-    output reg  [7:0]       staging_waddr,
+    output reg  [6:0]       staging_waddr,
     output reg  [255:0]     staging_wdata
 );
 
@@ -875,8 +875,10 @@ module param_rom (
     // ======================================================================
     always @(*) begin
         // 默认全赋零，防止产生锁存器 (Latch)
-        wgt_in_flat  = 2464'd0;
-        bias_in_flat = 512'd0;
+        // wgt_in_flat  = 2464'd0;
+        // bias_in_flat = 512'd0;
+        wgt_in_flat  = {2464{1'b0}};
+        bias_in_flat = {512{1'b0}};
         
         case (layer_mode)
             2'd0: begin // 【Conv1 模式】

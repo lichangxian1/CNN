@@ -5,7 +5,7 @@
 * Command : analyze_timing > ../reports/timing_cnn.rpt                        *
 * Design  : cnn_chip                                                          *
 * Version : main_1229_2e0365ed.rel                                            *
-* Date    : 12:58 AM, 22-Apr-26                                               *
+* Date    : 9:28 AM, 22-Apr-26                                                *
 *******************************************************************************
 *******************************************************************************
 * MAX Timing Analysis                                                         *
@@ -49,89 +49,89 @@ inst_CNN_top/u_controller/layer_mode_reg[0]/CK (DFFRHQXL)
                                                      0.00         0.00 R
 inst_CNN_top/u_controller/layer_mode_reg[0]/Q (DFFRHQXL)
                                                      0.41         0.41 F
-inst_CNN_top/u18880/Y (INVX1)                        2.00         2.41 R
-inst_CNN_top/u18877/Y (INVX1)                        1.50         3.91 F
-inst_CNN_top/u17925/Y (INVX1)                        1.24         5.15 R
-inst_CNN_top/u17926/Y (INVX1)                        1.56         6.71 F
+inst_CNN_top/u7084/Y (INVX1)                         2.00         2.41 R
+inst_CNN_top/u7081/Y (INVX1)                         1.50         3.91 F
+inst_CNN_top/u6627/Y (INVX1)                         1.24         5.15 R
+inst_CNN_top/u6628/Y (INVX1)                         1.55         6.71 F
 inst_CNN_top/u_mac_array/layer_mode[0] (mac_array)
                                                      0.00         6.71 F
 inst_CNN_top/u_mac_array/u217838/Y (INVX1)           0.48         7.19 R
-inst_CNN_top/u_mac_array/u224371/Y (NAND2X1)         1.46         8.66 F
+inst_CNN_top/u_mac_array/u224400/Y (NAND2X1)         1.46         8.65 F
 inst_CNN_top/u_mac_array/u217944/Y (INVX1)           0.37         9.02 R
-inst_CNN_top/u_mac_array/u217945/Y (INVX1)           1.13        10.16 F
-inst_CNN_top/u_mac_array/u215666/Y (INVX1)           2.30        12.46 R
-inst_CNN_top/u_mac_array/u217950/Y (INVX1)           0.21        12.67 F
-inst_CNN_top/u_mac_array/u217951/Y (INVX1)           1.77        14.44 R
-inst_CNN_top/u_mac_array/u163507/Y (AOI222X1)        0.48        14.92 F
-inst_CNN_top/u_mac_array/u163509/Y (OR3XL)           0.50        15.42 F
-inst_CNN_top/u_mac_array/u163531/Y (AND3X2)          0.25        15.66 F
-inst_CNN_top/u_mac_array/u240577/Y (NOR2X1)          0.14        15.81 R
-inst_CNN_top/u_mac_array/u240578/Y (XOR2X1)          0.28        16.09 R
-inst_CNN_top/u_mac_array/u240579/Y (XOR2X1)          0.31        16.40 R
-inst_CNN_top/u_mac_array/u163608/Y (XNOR2X1)         0.30        16.70 R
-inst_CNN_top/u_mac_array/u163609/Y (XNOR2X1)         0.34        17.05 R
-inst_CNN_top/u_mac_array/u163779/Y (XOR3X2)          0.54        17.59 F
-inst_CNN_top/u_mac_array/u163791/Y (AOI21X1)         0.18        17.76 R
-inst_CNN_top/u_mac_array/u163795/Y (OAI211X1)        0.21        17.97 F
-inst_CNN_top/u_mac_array/u163797/Y (OAI2BB1X1)       0.31        18.28 F
-inst_CNN_top/u_mac_array/u163799/Y (AOI31X1)         0.38        18.66 R
-inst_CNN_top/u_mac_array/u246644/Y (XNOR2X1)         0.38        19.03 R
-inst_CNN_top/u_mac_array/u246646/Y (XOR2X1)          0.29        19.33 F
-inst_CNN_top/u_mac_array/u164742/Y (AOI21X1)         0.27        19.60 R
-inst_CNN_top/u_mac_array/u247732/Y (XOR2X1)          0.32        19.92 R
-inst_CNN_top/u_mac_array/u247733/Y (XOR2X1)          0.27        20.19 R
-inst_CNN_top/u_mac_array/u247734/Y (XOR2X1)          0.31        20.50 R
-inst_CNN_top/u_mac_array/u165003/Y (XOR3X2)          0.32        20.82 R
-inst_CNN_top/u_mac_array/u249259/Y (XNOR2X1)         0.28        21.10 R
-inst_CNN_top/u_mac_array/u249260/Y (XOR2X1)          0.25        21.36 R
-inst_CNN_top/u_mac_array/u249261/Y (XOR2X1)          0.25        21.61 R
-inst_CNN_top/u_mac_array/u249262/Y (XOR2X1)          0.32        21.93 R
-inst_CNN_top/u_mac_array/u165149/Y (XNOR3X2)         0.51        22.44 F
-inst_CNN_top/u_mac_array/u250957/Y (OAI2BB1X1)       0.22        22.66 F
-inst_CNN_top/u_mac_array/u250958/Y (OAI21XL)         0.14        22.80 R
-inst_CNN_top/u_mac_array/u165677/Y (AOI2BB1X1)       0.49        23.30 R
-inst_CNN_top/u_mac_array/u165679/Y (AOI21X1)         0.18        23.47 F
-inst_CNN_top/u_mac_array/u166722/Y (XNOR3X2)         0.31        23.78 R
-inst_CNN_top/u_mac_array/u166875/Y (XOR2X1)          0.29        24.07 R
-inst_CNN_top/u_mac_array/u252749/Y (XOR2X1)          0.30        24.37 F
-inst_CNN_top/u_mac_array/u252979/Y (AOI21X1)         0.13        24.50 R
-inst_CNN_top/u_mac_array/u252980/Y (INVX1)           0.05        24.56 F
-inst_CNN_top/u_mac_array/u252981/Y (OAI21XL)         0.15        24.71 R
-inst_CNN_top/u_mac_array/u167193/Y (XNOR2X1)         0.35        25.06 R
-inst_CNN_top/u_mac_array/u167194/Y (XNOR2X1)         0.29        25.35 F
-inst_CNN_top/u_mac_array/u167197/Y (OAI21XL)         0.33        25.68 R
-inst_CNN_top/u_mac_array/u167334/Y (XNOR2X1)         0.37        26.05 R
-inst_CNN_top/u_mac_array/u167335/Y (XNOR2X1)         0.39        26.45 R
-inst_CNN_top/u_mac_array/u167353/Y (XNOR3X2)         0.39        26.84 F
-inst_CNN_top/u_mac_array/u167751/Y (XNOR2X1)         0.28        27.12 R
-inst_CNN_top/u_mac_array/u167752/Y (XNOR2X1)         0.32        27.44 R
-inst_CNN_top/u_mac_array/u167757/Y (XOR3X2)          0.48        27.92 R
-inst_CNN_top/u_mac_array/u167758/Y (NAND2X1)         0.10        28.02 F
-inst_CNN_top/u_mac_array/u169125/Y (AOI31X1)         0.22        28.24 R
-inst_CNN_top/u_mac_array/u169128/Y (NAND2X1)         0.18        28.41 F
-inst_CNN_top/u_mac_array/u169132/Y (AOI22X1)         0.25        28.66 R
-inst_CNN_top/u_mac_array/u169134/Y (OAI31X1)         0.18        28.85 F
-inst_CNN_top/u_mac_array/u169136/Y (AOI21X1)         0.21        29.06 R
-inst_CNN_top/u_mac_array/u169138/Y (OAI21XL)         0.18        29.24 F
-inst_CNN_top/u_mac_array/u169151/Y (NOR2X1)          0.14        29.38 R
-inst_CNN_top/u_mac_array/u169154/Y (NAND2BX1)        0.19        29.57 R
-inst_CNN_top/u_mac_array/u169155/Y (NAND2BX1)        0.12        29.69 F
-inst_CNN_top/u_mac_array/u169157/Y (AOI2BB1X1)       0.33        30.02 F
-inst_CNN_top/u_mac_array/u169159/Y (OAI2BB1X1)       0.21        30.23 F
-inst_CNN_top/u_mac_array/u169160/Y (AOI2BB1X1)       0.32        30.55 F
-inst_CNN_top/u_mac_array/u169162/Y (AOI21X1)         0.24        30.78 R
-inst_CNN_top/u_mac_array/u169164/Y (AOI2BB1X1)       0.26        31.04 R
-inst_CNN_top/u_mac_array/u169166/Y (OAI21XL)         0.19        31.23 F
-inst_CNN_top/u_mac_array/u169168/Y (AOI21X1)         0.25        31.48 R
-inst_CNN_top/u_mac_array/u169169/Y (AND2X2)          0.19        31.67 R
-inst_CNN_top/u_mac_array/u169170/Y (OAI31X1)         0.10        31.77 F
-inst_CNN_top/u_mac_array/u169174/Y (AOI2BB2X1)       0.19        31.96 R
-inst_CNN_top/u_mac_array/u169213/Y (AOI21X1)         0.11        32.07 F
-inst_CNN_top/u_mac_array/u169214/Y (OAI21XL)         0.17        32.24 R
-inst_CNN_top/u_mac_array/u169215/Y (NAND2X1)         0.07        32.31 F
+inst_CNN_top/u_mac_array/u217945/Y (INVX1)           1.15        10.17 F
+inst_CNN_top/u_mac_array/u215666/Y (INVX1)           2.19        12.36 R
+inst_CNN_top/u_mac_array/u217950/Y (INVX1)           0.21        12.57 F
+inst_CNN_top/u_mac_array/u217951/Y (INVX1)           1.76        14.34 R
+inst_CNN_top/u_mac_array/u163507/Y (AOI222X1)        0.48        14.82 F
+inst_CNN_top/u_mac_array/u163509/Y (OR3XL)           0.50        15.31 F
+inst_CNN_top/u_mac_array/u163531/Y (AND3X2)          0.25        15.56 F
+inst_CNN_top/u_mac_array/u240619/Y (NOR2X1)          0.14        15.70 R
+inst_CNN_top/u_mac_array/u240620/Y (XOR2X1)          0.28        15.99 R
+inst_CNN_top/u_mac_array/u240621/Y (XOR2X1)          0.31        16.30 R
+inst_CNN_top/u_mac_array/u163608/Y (XNOR2X1)         0.30        16.60 R
+inst_CNN_top/u_mac_array/u163609/Y (XNOR2X1)         0.34        16.94 R
+inst_CNN_top/u_mac_array/u163779/Y (XOR3X2)          0.54        17.48 F
+inst_CNN_top/u_mac_array/u163791/Y (AOI21X1)         0.18        17.66 R
+inst_CNN_top/u_mac_array/u163795/Y (OAI211X1)        0.21        17.87 F
+inst_CNN_top/u_mac_array/u163797/Y (OAI2BB1X1)       0.31        18.17 F
+inst_CNN_top/u_mac_array/u163799/Y (AOI31X1)         0.38        18.55 R
+inst_CNN_top/u_mac_array/u246699/Y (XNOR2X1)         0.38        18.93 R
+inst_CNN_top/u_mac_array/u246701/Y (XOR2X1)          0.29        19.22 F
+inst_CNN_top/u_mac_array/u164742/Y (AOI21X1)         0.27        19.49 R
+inst_CNN_top/u_mac_array/u247785/Y (XOR2X1)          0.32        19.81 R
+inst_CNN_top/u_mac_array/u247786/Y (XOR2X1)          0.27        20.08 R
+inst_CNN_top/u_mac_array/u247787/Y (XOR2X1)          0.31        20.39 R
+inst_CNN_top/u_mac_array/u165003/Y (XOR3X2)          0.32        20.72 R
+inst_CNN_top/u_mac_array/u249310/Y (XNOR2X1)         0.28        21.00 R
+inst_CNN_top/u_mac_array/u249311/Y (XOR2X1)          0.25        21.25 R
+inst_CNN_top/u_mac_array/u249312/Y (XOR2X1)          0.25        21.51 R
+inst_CNN_top/u_mac_array/u249313/Y (XOR2X1)          0.32        21.83 R
+inst_CNN_top/u_mac_array/u165149/Y (XNOR3X2)         0.51        22.34 F
+inst_CNN_top/u_mac_array/u251014/Y (OAI2BB1X1)       0.22        22.56 F
+inst_CNN_top/u_mac_array/u251015/Y (OAI21XL)         0.14        22.70 R
+inst_CNN_top/u_mac_array/u165677/Y (AOI2BB1X1)       0.49        23.19 R
+inst_CNN_top/u_mac_array/u165679/Y (AOI21X1)         0.18        23.37 F
+inst_CNN_top/u_mac_array/u166722/Y (XNOR3X2)         0.31        23.68 R
+inst_CNN_top/u_mac_array/u166875/Y (XOR2X1)          0.29        23.97 R
+inst_CNN_top/u_mac_array/u252809/Y (XOR2X1)          0.30        24.27 F
+inst_CNN_top/u_mac_array/u253039/Y (AOI21X1)         0.13        24.40 R
+inst_CNN_top/u_mac_array/u253040/Y (INVX1)           0.05        24.45 F
+inst_CNN_top/u_mac_array/u253041/Y (OAI21XL)         0.15        24.61 R
+inst_CNN_top/u_mac_array/u167193/Y (XNOR2X1)         0.35        24.96 R
+inst_CNN_top/u_mac_array/u167194/Y (XNOR2X1)         0.29        25.25 F
+inst_CNN_top/u_mac_array/u167197/Y (OAI21XL)         0.33        25.58 R
+inst_CNN_top/u_mac_array/u167334/Y (XNOR2X1)         0.37        25.95 R
+inst_CNN_top/u_mac_array/u167335/Y (XNOR2X1)         0.39        26.34 R
+inst_CNN_top/u_mac_array/u167353/Y (XNOR3X2)         0.39        26.74 F
+inst_CNN_top/u_mac_array/u167751/Y (XNOR2X1)         0.28        27.02 R
+inst_CNN_top/u_mac_array/u167752/Y (XNOR2X1)         0.32        27.33 R
+inst_CNN_top/u_mac_array/u167757/Y (XOR3X2)          0.48        27.82 R
+inst_CNN_top/u_mac_array/u167758/Y (NAND2X1)         0.10        27.91 F
+inst_CNN_top/u_mac_array/u169125/Y (AOI31X1)         0.22        28.13 R
+inst_CNN_top/u_mac_array/u169128/Y (NAND2X1)         0.18        28.31 F
+inst_CNN_top/u_mac_array/u169132/Y (AOI22X1)         0.25        28.56 R
+inst_CNN_top/u_mac_array/u169134/Y (OAI31X1)         0.18        28.74 F
+inst_CNN_top/u_mac_array/u169136/Y (AOI21X1)         0.21        28.95 R
+inst_CNN_top/u_mac_array/u169138/Y (OAI21XL)         0.18        29.14 F
+inst_CNN_top/u_mac_array/u169151/Y (NOR2X1)          0.14        29.28 R
+inst_CNN_top/u_mac_array/u169154/Y (NAND2BX1)        0.19        29.47 R
+inst_CNN_top/u_mac_array/u169155/Y (NAND2BX1)        0.12        29.58 F
+inst_CNN_top/u_mac_array/u169157/Y (AOI2BB1X1)       0.33        29.92 F
+inst_CNN_top/u_mac_array/u169159/Y (OAI2BB1X1)       0.21        30.13 F
+inst_CNN_top/u_mac_array/u169160/Y (AOI2BB1X1)       0.32        30.45 F
+inst_CNN_top/u_mac_array/u169162/Y (AOI21X1)         0.24        30.68 R
+inst_CNN_top/u_mac_array/u169164/Y (AOI2BB1X1)       0.26        30.94 R
+inst_CNN_top/u_mac_array/u169166/Y (OAI21XL)         0.19        31.13 F
+inst_CNN_top/u_mac_array/u169168/Y (AOI21X1)         0.25        31.38 R
+inst_CNN_top/u_mac_array/u169169/Y (AND2X2)          0.19        31.57 R
+inst_CNN_top/u_mac_array/u169170/Y (OAI31X1)         0.10        31.67 F
+inst_CNN_top/u_mac_array/u169174/Y (AOI2BB2X1)       0.19        31.86 R
+inst_CNN_top/u_mac_array/u169213/Y (AOI21X1)         0.11        31.96 F
+inst_CNN_top/u_mac_array/u169214/Y (OAI21XL)         0.17        32.13 R
+inst_CNN_top/u_mac_array/u169215/Y (NAND2X1)         0.07        32.21 F
 inst_CNN_top/u_mac_array/psum_out_flat_reg[95]/D (DFFRHQXL)
-                                                     0.00        32.31 F
-data arrival time                                                32.31
+                                                     0.00        32.21 F
+data arrival time                                                32.21
 
 clock clk (re)                                      50.00        50.00
 clock tree delay (ideal)                             0.00        50.00
@@ -142,7 +142,7 @@ library setup time                                  -0.25        49.25
 data required time                                               49.25
 ------------------------------------------------------------------------
 data required time                                               49.25
-data arrival time                                               -32.31
+data arrival time                                               -32.21
 ------------------------------------------------------------------------
-slack (MET)                                                      16.94
+slack (MET)                                                      17.04
 
