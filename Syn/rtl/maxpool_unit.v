@@ -77,18 +77,27 @@ module maxpool_unit (
 
     // 32通道并行比较器 (纯正流水线，不污染状态机)
     reg signed [7:0] max_reg [0:31];
+ // 32通道并行比较器 (融合 ReLU 激活)
     genvar g;
     generate
         for (g = 0; g < 32; g = g + 1) begin : gen_max
-            wire signed [7:0] cur_data = sram_rdata[g*8 +: 8];
+            // 1. 截取原始 8-bit 数据
+            wire [7:0] cur_raw = sram_rdata[g*8 +: 8];
+            
+            // 2. 🌟 绝对防弹版 ReLU：通过判断最高位 (cur_raw[7]) 
+            // 如果是 1 (负数) 则强行置 0，如果是 0 (正数) 则保持原样
+            wire [7:0] cur_relu = cur_raw[7] ? 8'd0 : cur_raw;
+            
             assign sram_wdata[g*8 +: 8] = max_reg[g];
             
             always @(posedge clk) begin
                 if (is_working && req_valid_d2) begin
                     if (process_cnt % 4 == 0) begin
-                        max_reg[g] <= cur_data; // 第 1 个点直接覆盖
+                        // 第 1 个点直接覆盖为 ReLU 后的纯净值
+                        max_reg[g] <= cur_relu;
                     end else begin
-                        if (cur_data > max_reg[g]) max_reg[g] <= cur_data; // 后面 3 个点取 Max
+                        // 后面 3 个点正常取 Max，由于全是正数，大小比较绝对安全
+                        if (cur_relu > max_reg[g]) max_reg[g] <= cur_relu;
                     end
                 end
             end

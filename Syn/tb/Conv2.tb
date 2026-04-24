@@ -1,0 +1,117 @@
+`timescale 1ns / 1ps
+
+module tb_dwconv_layer();
+    localparam IN_SIZE  = 2560; // 80 pixels * 32 channels
+    localparam OUT_SIZE = 1152; // 36 pixels * 32 channels
+
+    reg signed [7:0]  act_in [0:IN_SIZE-1];
+    reg signed [7:0]  golden_out [0:OUT_SIZE-1];
+    reg signed [7:0]  actual_out [0:31];
+
+    reg clk;
+    reg rst_n;
+    reg start;
+
+    cnn_top uut_cnn_top (
+        .clk(clk),
+        .rst_n(rst_n),
+        .start(start),
+        .ext_act_in(256'd0),
+        .ext_act_valid(1'b0)
+    );
+
+    initial begin
+        clk = 0;
+        forever #5 clk = ~clk; 
+    end
+
+    // =========================================================
+    // 🌟 探针监视器：抓取 MAC 阵列最底层的原汁原味输入
+    // =========================================================
+    always @(posedge clk) begin
+        // 当 FSM 在 DWConv (3) 且有效，且刚算第 0 个像素时触发
+        if (uut_cnn_top.u_controller.current_state == 4'd3 && 
+            uut_cnn_top.mac_valid && 
+            uut_cnn_top.u_controller.spatial_cnt == 7'd0) begin
+            
+            $display("\n==================================================");
+            $display(" [HW MAC Monitor] Cycle %0t | DWConv Pixel 0", $time);
+            $display("   ACT_IN_FLAT  (Hex) = %x", uut_cnn_top.act_in_flat);
+            $display("   WGT_IN_FLAT  (Hex) = %x", uut_cnn_top.wgt_in_flat);
+            $display("   BIAS_IN_FLAT (Hex) = %x", uut_cnn_top.bias_in_flat);
+        end
+    end
+
+    integer fd_in, fd_out, code, i, c, error_cnt;
+    reg [255:0] tb_pong_mem [0:79];
+    reg [255:0] val_256;
+
+    initial begin
+        force uut_cnn_top.u_post_process.cur_relu = 1'b0;
+        
+        fd_in = $fopen("./data/Test/Out_Conv.txt", "r");
+        for (i = 0; i < IN_SIZE; i = i + 1) code = $fscanf(fd_in, "%d", act_in[i]);
+        $fclose(fd_in);
+
+        fd_out = $fopen("./data/Test/Out_DWConv.txt", "r");
+        for (i = 0; i < OUT_SIZE; i = i + 1) code = $fscanf(fd_out, "%d", golden_out[i]);
+        $fclose(fd_out);
+
+        rst_n = 0;
+        start = 0;
+        for (i = 0; i < 80; i = i + 1) tb_pong_mem[i] = 256'd0;
+        #100;
+        rst_n = 1;
+        #20;
+
+        // 写入数据并补偿 ReLU
+        for (i = 0; i < 80; i = i + 1) begin
+            for (c = 0; c < 32; c = c + 1) begin
+                if (act_in[c * 80 + i] < 0) tb_pong_mem[i][c*8 +: 8] = 8'd0;
+                else tb_pong_mem[i][c*8 +: 8] = act_in[c * 80 + i];
+            end
+            uut_cnn_top.u_sram_pong.u_sram_low.mem_array[i]  = tb_pong_mem[i][127:0];
+            uut_cnn_top.u_sram_pong.u_sram_high.mem_array[i] = tb_pong_mem[i][255:128];
+        end
+        // ==========================================
+        // 3. FSM 时空穿梭：最自然的流水线切入
+        // ==========================================
+        @(posedge clk);
+        // 仅仅劫持状态机进入 DRAIN1，其余全部交给硬件原生逻辑！
+        force uut_cnn_top.u_controller.current_state = 4'd2; // ST_DRAIN1
+        
+        // 挂机等待，让硬件原生计数器慢慢排空，原生地发出各种前置信号
+        wait(uut_cnn_top.u_controller.drain_cnt == 3'd5);
+        
+        // 在 drain_cnt 达到 5 的这一拍，硬件已经原生地准备好了 
+        // layer_mode=1, prefetch=1, route_sel=1 等全部完美信号。
+        // 我们只需撤销劫持，它就会在下一拍无缝、无毛刺地滑入 ST_DW！
+        release uut_cnn_top.u_controller.current_state;
+        // 🌟 提前刹车：只要空间计数器跳到 1 (即第 0 个像素已算完)，就准备结束
+        wait(uut_cnn_top.u_controller.spatial_cnt == 7'd1);
+        repeat(15) @(posedge clk);
+
+        $display("\n==================================================");
+        error_cnt = 0;
+        
+        // 提取第 0 个像素的计算结果
+        val_256 = {uut_cnn_top.u_sram_ping.u_sram_high.mem_array[0], uut_cnn_top.u_sram_ping.u_sram_low.mem_array[0]};
+        
+        for (c = 0; c < 32; c = c + 1) begin
+            actual_out[c] = val_256[c*8 +: 8];
+            if (actual_out[c] !== golden_out[c*36]) begin
+                $display("[ERROR] Pixel 0, Channel %0d | Expected: %0d, Got: %0d", c, golden_out[c*36], actual_out[c]);
+                error_cnt = error_cnt + 1;
+            end else begin
+                $display("[PASS]  Pixel 0, Channel %0d | Match (%0d)", c, actual_out[c]);
+            end
+        end
+        
+        $display("==================================================");
+        if (error_cnt == 0) $display(" [SUCCESS] First Pixel computation is 100%% correct!");
+        else $display(" [FAILED] First Pixel has %0d errors.", error_cnt);
+        $display("==================================================\n");
+        
+        $finish;
+    end
+endmodule

@@ -90,13 +90,22 @@ module param_rom (
             end
 
             2'd3: begin // 【FC 模式】
-                // ch_grp_cnt 只有 0 或 1，代表当前计算哪个神经元
-                bias_in_flat[15:0] = bias_fc[ch_grp_cnt * 16 +: 16];
-                for (p = 0; p < 288; p = p + 1) begin
-                    wgt_in_flat[p*8 +: 8] = weight_fc[(ch_grp_cnt * 288 + p)*8 +: 8];
+                // 1. 修正官方反人类的偏置给法
+                if (ch_grp_cnt == 4'd0) begin
+                    bias_in_flat[15:0] = bias_fc[15:0];   // Neuron 0 给低 16 位
+                end else begin
+                    bias_in_flat[15:0] = bias_fc[31:16];  // Neuron 1 给高 16 位
+                end
+                
+                // 2. 权重路由重映射：动态解开官方的串行编排
+                // 直接使用已声明的 ch (通道 0~31) 和 p (像素 0~8)
+                for (ch = 0; ch < 32; ch = ch + 1) begin
+                    for (p = 0; p < 9; p = p + 1) begin
+                        // 官方密码本：18 * 通道 + 2 * 像素 + 神经元
+                        wgt_in_flat[(ch * 9 + p) * 8 +: 8] = weight_fc[(18 * ch + 2 * p + ch_grp_cnt) * 8 +: 8];
+                    end
                 end
             end
-            
             default: ;
         endcase
     end

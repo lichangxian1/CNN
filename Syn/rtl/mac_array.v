@@ -1,5 +1,3 @@
-`timescale 1ns / 1ps
-
 module mac_array (
     input  wire                 clk,
     input  wire                 rst_n,

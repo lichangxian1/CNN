@@ -98,6 +98,19 @@ module cnn_top (
     wire [255:0]  act_out_flat;          
     wire          out_valid;             
     wire          window_valid;
+    // 🌟 新增：为 bias 添加两级流水线延迟，对齐 MAC 阵列
+    reg  [511:0]  bias_pipe_0;
+    reg  [511:0]  bias_pipe_1;
+
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            bias_pipe_0 <= 512'd0;
+            bias_pipe_1 <= 512'd0;
+        end else begin
+            bias_pipe_0 <= bias_in_flat;
+            bias_pipe_1 <= bias_pipe_0;
+        end
+    end
     
     wire          staging_wen;
     wire [9:0]    staging_waddr;
@@ -198,13 +211,15 @@ module cnn_top (
         .act_in_flat(act_in_flat), .wgt_in_flat(wgt_in_flat), .psum_out_flat(psum_out_flat));
 
 // 🚨 删去写死的 quant_M0 和 quant_n，传入动态对齐的 layer_mode_pipe[1]
+// 🚨 删去写死的 quant_M0 和 quant_n，传入动态对齐的 layer_mode_pipe[1]
     post_process u_post_process (
         .clk(clk), 
         .rst_n(rst_n), 
         .mac_valid(mac_valid_sync), 
-        .layer_mode(layer_mode_pipe[1]), // 🌟 传入与数据绝对对齐的层模式 (T+2)
+        .layer_mode(layer_mode_pipe[1]), 
         .psum_in_flat(psum_out_flat), 
-        .bias_in_flat(bias_in_flat), 
+        // 🌟 核心修复：这里改为传入延迟 2 拍的 bias，实现时空绝对对齐！
+        .bias_in_flat(bias_pipe_1), 
         .out_valid(out_valid), 
         .act_out_flat(act_out_flat)
     );

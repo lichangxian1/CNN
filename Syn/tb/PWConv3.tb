@@ -1,0 +1,39 @@
+`timescale 1ns / 1ps
+
+module tb_pwconv_layer();
+    localparam IN_SIZE  = 1152;
+    localparam OUT_SIZE = 1152;
+
+    reg signed [7:0]  act_in [0:IN_SIZE-1];
+    reg signed [7:0]  golden_out [0:OUT_SIZE-1];
+    reg signed [7:0]  actual_out [0:OUT_SIZE-1];
+
+    integer fd_in, fd_out, code, i, error_cnt;
+
+    initial begin
+        fd_in = $fopen("./data/Test/Out_DWConv.txt", "r");
+        for (i = 0; i < IN_SIZE; i = i + 1) code = $fscanf(fd_in, "%d", act_in[i]);
+        $fclose(fd_in);
+
+        fd_out = $fopen("./data/Test/Out_PWConv.txt", "r");
+        for (i = 0; i < OUT_SIZE; i = i + 1) code = $fscanf(fd_out, "%d", golden_out[i]);
+        $fclose(fd_out);
+
+        // ==========================================
+        // 驱动 PW 卷积硬件逻辑
+        // ==========================================
+        #1000;
+
+        error_cnt = 0;
+        for (i = 0; i < OUT_SIZE; i = i + 1) begin
+            if (actual_out[i] !== golden_out[i]) begin
+                $display("[PWConv ERROR] Index %0d | Expected: %0d, Got: %0d", i, golden_out[i], actual_out[i]);
+                error_cnt = error_cnt + 1;
+            end
+        end
+        
+        if (error_cnt == 0) $display("[PASS] PWConv Layer Match!");
+        else $display("[FAIL] PWConv Layer has %0d errors.", error_cnt);
+        $finish;
+    end
+endmodule

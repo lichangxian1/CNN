@@ -1,0 +1,131 @@
+`timescale 1ns / 1ps
+
+module tb_conv_layer();
+    localparam IN_SIZE  = 300;
+    localparam OUT_SIZE = 2560; // 80 pixels * 32 channels
+
+    reg signed [7:0]  golden_out [0:OUT_SIZE-1];
+    reg signed [7:0]  actual_out [0:31]; 
+
+    // --- 硬件接口 ---
+    reg clk;
+    reg rst_n;
+    reg start;
+
+    // --- 例化顶层模块 ---
+    cnn_top uut_cnn_top (
+        .clk(clk),
+        .rst_n(rst_n),
+        .start(start),
+        .ext_act_in(256'd0),
+        .ext_act_valid(1'b0)
+    );
+
+    // --- 时钟生成 ---
+    initial begin
+        clk = 0;
+        forever #5 clk = ~clk; 
+    end
+
+    integer fd_in, fd_out, code, i, j, c, error_cnt;
+    integer temp_val;
+    reg [255:0] tb_input_mem [0:79];
+    reg [255:0] val_256;
+    reg [127:0] pong_low, pong_high;
+
+    // =========================================================
+    // 🌟 探针监视器：抓取 MAC 阵列最底层的原汁原味输入 (仅打印前几个周期)
+    // =========================================================
+    always @(posedge clk) begin
+        if (uut_cnn_top.u_controller.current_state == 4'd1 && 
+            uut_cnn_top.mac_valid && 
+            uut_cnn_top.u_controller.spatial_cnt == 7'd0) begin
+            
+            $display("\n==================================================");
+            $display(" [MAC Monitor] Cycle %0t | Channel Group = %0d", $time, uut_cnn_top.ch_grp_cnt);
+            $display("   ACT_IN_FLAT  (Hex) = %x", uut_cnn_top.act_in_flat);
+            $display("   WGT_IN_FLAT  (Hex) = %x", uut_cnn_top.wgt_in_flat);
+            $display("   BIAS_IN_FLAT (Hex) = %x", uut_cnn_top.bias_in_flat);
+        end
+    end
+
+    initial begin
+        // 强制关闭第一层卷积的 ReLU 操作
+        force uut_cnn_top.u_post_process.cur_relu = 1'b0;
+
+        // 1. 初始化
+        rst_n = 0;
+        start = 0;
+        for (j = 0; j < 80; j = j + 1) tb_input_mem[j] = 256'd0;
+        #100;
+        rst_n = 1;
+        #20;
+
+        // 2. 灌入单通道输入图 (32像素打包机制)
+        fd_in = $fopen("./data/Test/Input.txt", "r");
+        for (j = 0; j < 300; j = j + 1) begin
+            code = $fscanf(fd_in, "%d", temp_val);
+            tb_input_mem[j / 32][(j % 32) * 8 +: 8] = temp_val[7:0];
+        end
+        $fclose(fd_in);
+
+        // 将拼装好的满载数据，写入 SRAM Ping (Conv1 数据源)
+        for (j = 0; j < 10; j = j + 1) begin
+            uut_cnn_top.u_sram_ping.u_sram_low.mem_array[j]  = tb_input_mem[j][127:0];
+            uut_cnn_top.u_sram_ping.u_sram_high.mem_array[j] = tb_input_mem[j][255:128];
+        end
+
+        // 3. 读取参考答案
+        fd_out = $fopen("./data/Test/Out_Conv.txt", "r");
+        for (i = 0; i < OUT_SIZE; i = i + 1) code = $fscanf(fd_out, "%d", golden_out[i]);
+        $fclose(fd_out);
+
+        // 4. 启动 FSM
+        @(posedge clk);
+        start = 1;
+        @(posedge clk);
+        start = 0;
+
+        // =========================================================
+        // 5. 挂机等待执行完成 (等待 FSM 进入排空状态 ST_DRAIN1)
+        // =========================================================
+        wait(uut_cnn_top.u_controller.current_state == 4'd2); 
+        
+        // 再给 15 拍，让后处理、量化和组装缓存里的余血安全落入 SRAM Pong
+        repeat(15) @(posedge clk);
+
+        // =========================================================
+        // 6. 全量结果校验 (80个像素 * 32个通道)
+        // =========================================================
+        $display("\n==================================================");
+        error_cnt = 0;
+        
+        // 遍历所有 80 个空间像素
+        for (i = 0; i < 80; i = i + 1) begin
+            // 取出 SRAM Pong 里的完整 256 位数据
+            pong_low  = uut_cnn_top.u_sram_pong.u_sram_low.mem_array[i];
+            pong_high = uut_cnn_top.u_sram_pong.u_sram_high.mem_array[i];
+            val_256   = {pong_high, pong_low};
+            
+            // 遍历 32 个通道
+            for (c = 0; c < 32; c = c + 1) begin
+                actual_out[c] = val_256[c*8 +: 8];
+                
+                // 在 Out_Conv.txt 中，通道 c 的像素 i 对应索引是 c * 80 + i
+                if (actual_out[c] !== golden_out[c*80 + i]) begin
+                    // 为了防止刷屏，只打印前 20 个错误
+                    if (error_cnt < 20) begin
+                        $display("[ERROR] Pixel %0d, Channel %0d | Expected: %0d, Got: %0d", i, c, golden_out[c*80 + i], actual_out[c]);
+                    end
+                    error_cnt = error_cnt + 1;
+                end
+            end
+        end
+        
+        if (error_cnt == 0) $display("🎉 [PASS] Conv1 Layer 全量 80 个像素 100%% Match!");
+        else $display("❌ [FAIL] Conv1 Layer 共出现 %0d 个错误.", error_cnt);
+        $display("==================================================\n");
+        
+        $finish;
+    end
+endmodule
